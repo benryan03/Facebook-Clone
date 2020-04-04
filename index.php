@@ -8,8 +8,8 @@ else{
     $loggedInUser = $_SESSION["loggedInUser"];}
 
 //Check if user was selected
-if (isset($_POST["selectedUser"])){
-    $selectedUser = $_POST["selectedUser"];}
+if (isset($_GET["selectedUser"])){
+    $selectedUser = $_GET["selectedUser"];}
 else {
     $selectedUser = "None";}
 
