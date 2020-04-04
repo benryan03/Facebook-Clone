@@ -1,25 +1,22 @@
 <?php
+
+//If no user is logged in, setLoggedInUser to None
 session_start();
+if (!isset($_SESSION["loggedInUser"])){
+    $_SESSION["loggedInUser"] = "None";}
+else{
+    $loggedInUser = $_SESSION["loggedInUser"];}
+
+//Check if user was selected
+if (isset($_POST["selectedUser"])){
+    $selectedUser = $_POST["selectedUser"];}
+else {
+    $selectedUser = "None";}
 
 date_default_timezone_set("America/New_York");
 $timestamp = date("d/m/Y h:i:sa");
 
-//If no user is logged in, setLoggedInUser to None
-if (!isset($_SESSION["loggedInUser"])){
-    $_SESSION["loggedInUser"] = "None";
-}
-$loggedInUser = $_SESSION["loggedInUser"];
-
-if (isset($_GET["selectedUser"])){
-    $selectedUser = $_GET["selectedUser"];
-}
-else {
-    $selectedUser = "None";
-}
-
-
-
-$debug = "1";
+$debug = "";
 
 //Connect to database
 $serverName = "localhost\sqlexpress";
@@ -27,9 +24,6 @@ $connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"pass
 $conn = sqlsrv_connect($serverName, $connectionInfo);
 
 if (isset($_POST["new_status"])){
-    
-    $debug = "true e";
-
     $newStatus = $_POST["new_status"];
 
     //To calculate new comment ID, count number of rows in database and add 1
@@ -41,14 +35,8 @@ if (isset($_POST["new_status"])){
     $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0') ";
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
-        print_r(sqlsrv_errors());
-    }
+        print_r(sqlsrv_errors());}
 }
-
-
-
-
-
 ?>
 
 <html>
@@ -62,12 +50,12 @@ if (isset($_POST["new_status"])){
         <h1><a href="index.php">Social Network</a></h1>
     </div>
 
+    <!--Options bar-->
     <div class="options" id="options">
         <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
         <?php if ($loggedInUser == "None"){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
         <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
         <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';} ?>
-
     </div>
 
     <div class="feed" id="feed">
@@ -95,20 +83,18 @@ if (isset($_POST["new_status"])){
         $posts_count = sqlsrv_num_rows($posts_array);
 
         for ($x = 1; $x < $posts_count + 1; $x++){
-            $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row         
+            $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
             
+            //Display a post
             echo nl2br(
                 "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font> 
                 <font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
                 $posts_array_row[1]."\n\n"
             );
-
         }
-
         ?>
 
     </div>
-
     <div class="debug">
         Debug<br>
         <?php
