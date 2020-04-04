@@ -15,6 +15,8 @@ body {
     text-decoration: none;
 } 
 
+
+
 .options {
     background-color: white;
     width: 700;
@@ -35,4 +37,9 @@ body {
 .error {
     color: red;
     font-size: 15px;
+}
+
+.feed a {
+    color: #0080ff;
+    text-decoration: none;
 }

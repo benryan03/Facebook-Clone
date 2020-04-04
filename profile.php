@@ -10,14 +10,14 @@ if (!isset($_SESSION["loggedInUser"])){
 }
 $loggedInUser = $_SESSION["loggedInUser"];
 
-/*
-//If no user is selected in, set SelectedUser to None
-if (isset($_POST["selectedUser"])){
-    $selectedUser = $_POST["selectedUser"];
+if (isset($_GET["selectedUser"])){
+    $selectedUser = $_GET["selectedUser"];
+
 }
 else {
     $selectedUser = "None";
-*/
+}
+
 
 
 $debug = "1";
@@ -73,7 +73,7 @@ if (isset($_POST["new_status"])){
 
     <div class="feed" id="feed">
 
-        Your feed<br>
+        Your Wall<br>
 
         <!--Post a status-->
         <form action="?" method="post">
@@ -85,7 +85,7 @@ if (isset($_POST["new_status"])){
         <?php
 
         //Count how many comments are in the the thread
-        $query = "SELECT * FROM posts ORDER BY date_submitted DESC";
+        $query = "SELECT * FROM posts WHERE post_author = '$selectedUser' ORDER BY date_submitted DESC";
         $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
         $posts_count = sqlsrv_num_rows($posts_array);
 
@@ -107,7 +107,8 @@ if (isset($_POST["new_status"])){
     <div class="debug">
         Debug<br>
         <?php
-            echo $debug;
+            echo nl2br($debug."\n selectedUser: ".$selectedUser);
+
         ?>
     </div>
     </center>
