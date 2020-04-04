@@ -12,7 +12,6 @@ $loggedInUser = $_SESSION["loggedInUser"];
 
 if (isset($_GET["selectedUser"])){
     $selectedUser = $_GET["selectedUser"];
-
 }
 else {
     $selectedUser = "None";
@@ -67,13 +66,19 @@ if (isset($_POST["new_status"])){
         <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
         <?php if ($loggedInUser == "None"){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
         <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
-        <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?' . $loggedInUser . '">' .$loggedInUser. '</a>';} ?>
+        <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';} ?>
 
     </div>
 
     <div class="feed" id="feed">
 
-        Your Wall<br>
+        <?php 
+        if ($selectedUser == $loggedInUser){
+            echo "Your Wall";}
+        else {
+            echo nl2br($selectedUser."'s Wall");
+        }
+        ?>
 
         <!--Post a status-->
         <form action="?" method="post">

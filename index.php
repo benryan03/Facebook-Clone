@@ -10,17 +10,14 @@ if (!isset($_SESSION["loggedInUser"])){
 }
 $loggedInUser = $_SESSION["loggedInUser"];
 
-/*
-//If no user is selected in, set SelectedUser to None
 if (isset($_POST["selectedUser"])){
     $selectedUser = $_POST["selectedUser"];
 }
 else {
     $selectedUser = "None";
-*/
+}
 
-
-$debug = "1";
+$debug = "";
 
 //Connect to database
 $serverName = "localhost\sqlexpress";
@@ -67,7 +64,7 @@ if (isset($_POST["new_status"])){
         <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
         <?php if ($loggedInUser == "None"){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
         <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
-        <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?' . $loggedInUser . '">' .$loggedInUser. '</a>';} ?>
+        <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';} ?>
 
     </div>
 
@@ -103,13 +100,7 @@ if (isset($_POST["new_status"])){
         ?>
 
     </div>
-
-    <div class="debug">
-        Debug<br>
-        <?php
-            echo $debug;
-        ?>
-    </div>
+    <div class="debug"><?php echo $debug ?></div>
     </center>
 </body>
 </html>
