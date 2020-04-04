@@ -62,49 +62,51 @@ if (isset($_POST["new_status"])){
         <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';} ?>
     </div>
 
-    <div class="feed" id="feed">
+    <div class="main">
+        <span class="wall" id="wall">
 
-        <?php 
-        if ($selectedUser == $loggedInUser){
-            echo "Your Wall";}
-        else {
-            echo nl2br($selectedUser."'s Wall");
-        }
-        ?>
+            <?php 
+            if ($selectedUser == $loggedInUser){
+                echo "Your Wall";}
+            else {
+                echo nl2br($selectedUser."'s Wall");
+            }
+            ?>
 
-        <!--Post a status-->
-        <form action="?" method="post">
-        <textarea name="new_status" rows="1" cols="40" placeholder="Post a status"></textarea>
-        <input type="submit" value="Submit" name="submit_status"><br>
-        <div class="error" id="status_error"><br></div>
-        </form>
+            <!--Post a status-->
+            <form action="?" method="post">
+            <textarea name="new_status" rows="1" cols="40" placeholder="Post a status"></textarea>
+            <input type="submit" value="Submit" name="submit_status"><br>
+            <div class="error" id="status_error"><br></div>
+            </form>
 
-        <?php
+            <?php
 
-        //Count how many comments are in the the thread
-        $query = "SELECT * FROM posts WHERE post_author = '$selectedUser' ORDER BY date_submitted DESC";
-        $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
-        $posts_count = sqlsrv_num_rows($posts_array);
+            //Count how many comments are in the the thread
+            $query = "SELECT * FROM posts WHERE post_author = '$selectedUser' ORDER BY date_submitted DESC";
+            $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
+            $posts_count = sqlsrv_num_rows($posts_array);
 
-        for ($x = 1; $x < $posts_count + 1; $x++){
-            $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
-            
-            //Display a post
-            echo nl2br(
-                "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font>" .
-                "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
-                $posts_array_row[1]."\n\n"
-            );
-        }
-        ?>
-
-    </div>
-    <div class="debug">
-        Debug<br>
-        <?php
-            echo nl2br($debug."\n selectedUser: ".$selectedUser);
-
-        ?>
+            for ($x = 1; $x < $posts_count + 1; $x++){
+                $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
+                
+                //Display a post
+                echo nl2br(
+                    "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font>" .
+                    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
+                    $posts_array_row[1]."\n\n"
+                );
+            }
+            ?>
+        </span>
+        <span class="sidebar">
+            <?php
+                echo nl2br(
+                    "Viewing ".$selectedUser."'s profile\n".
+                    "Add friend"
+                );
+            ?>
+        </span
     </div>
     </center>
 </body>

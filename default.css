@@ -1,3 +1,9 @@
+* { 
+    -moz-box-sizing: border-box; 
+    -webkit-box-sizing: border-box; 
+     box-sizing: border-box; 
+}
+
 body {
     background-color: lightgray;
     font-family: sans-serif;    
@@ -17,7 +23,7 @@ body {
 
 .options {
     background-color: white;
-    width: 700;
+    width: 800;
     padding-top: 20;
     padding-bottom: 20;
     padding-left: 50;
@@ -28,14 +34,77 @@ body {
     padding: 40px;    
     text-align: left;
     background-color: white;
-    width: 720;
+    width: 800;
     min-height: 500px;
 }
+
+.debug {
+    outline: 2px solid black;
+    outline-offset: -2px;
+    float: bottom;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.main {
+    display: table;
+    width: 800px;
+    position: relative;
+    background-color: white;
+}
+
+.wall {
+    float: left;
+    display: table-cell;
+    padding: 40px;    
+    text-align: left;
+    background-color: white;
+    width: 70%;
+    min-height: 500px;
+}
+
+.sidebar {
+    float: right;
+    display: table-cell;
+    padding: 40px;    
+    text-align: left;
+    background-color: white;
+    width: 30%;
+    min-height: 500px;
+}
+
+
+
+
+
+
+
+
+
 
 .content {
     padding: 40px;    
     background-color: white;
-    width: 720;
+    width: 800px;
 }
 
 .error {
@@ -43,7 +112,7 @@ body {
     font-size: 15px;
 }
 
-.feed a {
+.feed a, .wall a {
     color: #0080ff;
     text-decoration: none;
 }

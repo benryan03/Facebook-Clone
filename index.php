@@ -62,6 +62,7 @@ if (isset($_POST["new_status"])){
         <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';} ?>
     </div>
 
+    
     <div class="feed" id="feed">
         Your feed<br>
 
