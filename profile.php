@@ -3,9 +3,13 @@
 //If no user is logged in, setLoggedInUser to None
 session_start();
 if (!isset($_SESSION["loggedInUser"])){
-    $_SESSION["loggedInUser"] = "None";}
+    $loggedInUser = "None";}
 else{
     $loggedInUser = $_SESSION["loggedInUser"];}
+
+//If no user is logged in, redirect to login page
+if ($loggedInUser == "None"){
+    header("Location:login.php");}
 
 //Check if user was selected
 if (isset($_GET["selectedUser"])){
