@@ -1,0 +1,38 @@
+body {
+    background-color: lightgray;
+    font-family: sans-serif;    
+}
+
+.header {
+    background-color: whitesmoke;
+    width: 800;
+    padding-top: 5;
+    padding-bottom: 5;
+}
+
+.header a {
+    color: gray;
+    text-decoration: none;
+} 
+
+.options {
+    background-color: white;
+    width: 700;
+    padding-top: 20;
+    padding-bottom: 20;
+    padding-left: 50;
+    padding-right: 50;
+}
+
+.feed {
+    padding: 40px;    
+    text-align: left;
+    background-color: white;
+    width: 720;
+    min-height: 500px;
+}
+
+.error {
+    color: red;
+    font-size: 15px;
+}
