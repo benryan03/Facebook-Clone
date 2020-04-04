@@ -3,9 +3,14 @@
 //If no user is logged in, setLoggedInUser to None
 session_start();
 if (!isset($_SESSION["loggedInUser"])){
-    $_SESSION["loggedInUser"] = "None";}
+    $_SESSION["loggedInUser"] = "None";
+}
 else{
     $loggedInUser = $_SESSION["loggedInUser"];}
+
+if ($loggedInUser == "None"){
+    header("Location:login.php");
+}
 
 //Check if user was selected
 if (isset($_GET["selectedUser"])){
@@ -79,8 +84,8 @@ if (isset($_POST["new_status"])){
             
             //Display a post
             echo nl2br(
-                "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font> 
-                <font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
+                "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font>" .
+                "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
                 $posts_array_row[1]."\n\n");
         }
         ?>

@@ -15,8 +15,6 @@ body {
     text-decoration: none;
 } 
 
-
-
 .options {
     background-color: white;
     width: 700;
@@ -32,6 +30,12 @@ body {
     background-color: white;
     width: 720;
     min-height: 500px;
+}
+
+.content {
+    padding: 40px;    
+    background-color: white;
+    width: 720;
 }
 
 .error {

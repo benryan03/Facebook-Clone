@@ -60,14 +60,13 @@ if (!empty($_POST["submit"])){
 <center>
 
 <div class="header">
-    <h1><a href="index.php"Social Network</a></h1>
+    <h1><a href="index.php">Social Network</a></h1>
 </div>
 
 <div class="options">
     <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
     <?php if ($loggedInUser == "None"){echo '<a href="login.php">Log in</a>&nbsp;';} ?>
     <?php if ($loggedInUser != "None"){echo '<a href="new_thread.php">New thread</a>&nbsp;';} ?>
-    Current user: <?php echo $loggedInUser ?>&nbsp;
     <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
 </div>
 
