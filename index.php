@@ -20,13 +20,33 @@ else {
 date_default_timezone_set("America/New_York");
 $timestamp = date("d/m/Y h:i:sa");
 
-$debug = "";
 
 //Connect to database
 $serverName = "localhost\sqlexpress";
 $connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"password123");
 $conn = sqlsrv_connect($serverName, $connectionInfo);
 
+//Get userID of loggedinUser
+$getCurrentUserIDQuery = "SELECT 'id' FROM users WHERE username = '$loggedInUser'";
+$getCurrentUserID = sqlsrv_query($conn, $getCurrentUserIDQuery);
+$currentUserID = sqlsrv_fetch($getCurrentUserID);
+
+//Count friends of loggedInUser
+$getCurrentUserFriendsQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID'";
+$currentUserFriends = sqlsrv_query($conn, $getCurrentUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
+$currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends);
+
+//Get friends of loggedInUser
+$currentUserFriendsArray = array();
+for ($x = 1; $x < $currentUserFriendsCount + 1; $x++){
+    $currentUserFriendsRow = sqlsrv_fetch_array($currentUserFriends, SQLSRV_FETCH_NUMERIC); //Select next row
+    array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);
+}
+ 
+$debug1 = $currentUserID;
+$debug2 = $currentUserFriendsArray;
+
+//If new status has been posted
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
 
@@ -90,7 +110,10 @@ if (isset($_POST["new_status"])){
         }
         ?>
     </div>
-    <div class="debug"><?php echo $debug ?></div>
+    <div class="debug">
+    <?php print_r($debug1) ?><br>
+    <?php print_r($debug2) ?>
+    </div>
     </center>
 </body>
 </html>
