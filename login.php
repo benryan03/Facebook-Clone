@@ -3,10 +3,9 @@ session_start();
 
 //If no user is logged in, setLoggedInUser to None
 if (!isset($_SESSION["loggedInUser"])){
-    $_SESSION["loggedInUser"] = "None";
-}
-
-$loggedInUser = $_SESSION["loggedInUser"];
+    $_SESSION["loggedInUser"] = "None";}
+else {
+    $loggedInUser = $_SESSION["loggedInUser"];}
 
 $username = "";
 $password = "";
@@ -39,7 +38,7 @@ if (!empty($_POST["submit"])){
 
     if ($isPasswordCorrect == true){
         //Login success
-        $_SESSION["loggedInUser"] = $username;
+        $_SESSION["loggedInUser"] = trim($username);
         header("Location:index.php");
     }
     else {

@@ -39,8 +39,6 @@ body {
 }
 
 .debug {
-    outline: 2px solid black;
-    outline-offset: -2px;
     float: bottom;
 }
 

@@ -27,24 +27,29 @@ $connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"pass
 $conn = sqlsrv_connect($serverName, $connectionInfo);
 
 //Get userID of loggedinUser
-$getCurrentUserIDQuery = "SELECT 'id' FROM users WHERE username = '$loggedInUser'";
-$getCurrentUserID = sqlsrv_query($conn, $getCurrentUserIDQuery);
-$currentUserID = sqlsrv_fetch($getCurrentUserID);
+$getCurrentUserIDQuery = "SELECT id FROM users WHERE username = '$loggedInUser'";
+$getCurrentUserID = sqlsrv_query($conn, $getCurrentUserIDQuery, array());
+$currentUserID = sqlsrv_fetch_array($getCurrentUserID);
+$currentUserID = $currentUserID[0];
 
 //Count friends of loggedInUser
 $getCurrentUserFriendsQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID'";
 $currentUserFriends = sqlsrv_query($conn, $getCurrentUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
 $currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends);
 
-//Get friends of loggedInUser
+//Get friends of loggedInUser as array of user IDs
 $currentUserFriendsArray = array();
 for ($x = 1; $x < $currentUserFriendsCount + 1; $x++){
     $currentUserFriendsRow = sqlsrv_fetch_array($currentUserFriends, SQLSRV_FETCH_NUMERIC); //Select next row
     array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);
 }
- 
-$debug1 = $currentUserID;
-$debug2 = $currentUserFriendsArray;
+
+//Convert currentUserFriendsArray from user IDs to usernames
+foreach ($currentUserFriendsArray as &$value){
+    $convertQuery = " SELECT username FROM users WHERE id = '$value' ";
+    $convert = sqlsrv_query($conn, $convertQuery);
+    $convert = sqlsrv_fetch_array($convert);
+    $value = $convert[0];}
 
 //If new status has been posted
 if (isset($_POST["new_status"])){
@@ -61,6 +66,7 @@ if (isset($_POST["new_status"])){
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
 }
+
 ?>
 
 <html>
@@ -93,9 +99,11 @@ if (isset($_POST["new_status"])){
         <div class="error" id="status_error"><br></div>
         </form>
 
-        <?php
+        <?php   
         //Count how many comments are in the the thread
-        $query = "SELECT * FROM posts ORDER BY date_submitted DESC";
+        $currentUserFriendsString = "'".implode("', '", $currentUserFriendsArray)."'";
+        $debug5 = $currentUserFriendsString;
+        $query = "SELECT * FROM posts WHERE post_author IN ($currentUserFriendsString) OR post_author = '$loggedInUser' ORDER BY date_submitted DESC";
         $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
         $posts_count = sqlsrv_num_rows($posts_array);
 
@@ -104,15 +112,13 @@ if (isset($_POST["new_status"])){
             
             //Display a post
             echo nl2br(
-                "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font>" .
+                "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font> " .
                 "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
                 $posts_array_row[1]."\n\n");
         }
         ?>
     </div>
     <div class="debug">
-    <?php print_r($debug1) ?><br>
-    <?php print_r($debug2) ?>
     </div>
     </center>
 </body>
