@@ -21,13 +21,28 @@ body {
     text-decoration: none;
 } 
 
-.options {
+#options {
+    display: table;
     background-color: white;
     width: 800;
+}
+
+#search {
+    display: table-cell;
+    text-align: left;
     padding-top: 20;
     padding-bottom: 20;
-    padding-left: 50;
-    padding-right: 50;
+    padding-left: 40;
+    padding-right: 40;
+}
+
+#userOptions {
+    display: table-cell;
+    text-align: right;
+    padding-top: 20;
+    padding-bottom: 20;
+    padding-left: 40;
+    padding-right: 40;
 }
 
 .feed {
@@ -41,12 +56,6 @@ body {
 .debug {
     float: bottom;
 }
-
-
-
-
-
-
 
 
 

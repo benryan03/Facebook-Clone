@@ -41,8 +41,7 @@ $currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends);
 $currentUserFriendsArray = array();
 for ($x = 1; $x < $currentUserFriendsCount + 1; $x++){
     $currentUserFriendsRow = sqlsrv_fetch_array($currentUserFriends, SQLSRV_FETCH_NUMERIC); //Select next row
-    array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);
-}
+    array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);}
 
 //Convert currentUserFriendsArray from user IDs to usernames
 foreach ($currentUserFriendsArray as &$value){
@@ -55,7 +54,7 @@ foreach ($currentUserFriendsArray as &$value){
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
 
-    //To calculate new comment ID, count number of rows in database and add 1
+    //To calculate new post ID, count number of rows in database and add 1
     $countExistingPostsQuery = "SELECT * FROM posts";
     $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
     $posts_count = sqlsrv_num_rows( $countExistingPosts );
@@ -76,19 +75,26 @@ if (isset($_POST["new_status"])){
 </head>
 <body>
     <center>
+    <!--Logo-->
     <div class="header" id="header">
         <h1><a href="index.php">Social Network</a></h1>
     </div>
 
     <!--Options bar-->
-    <div class="options" id="options">
-        <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
-        <?php if ($loggedInUser == "None"){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
-        <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
-        <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';} ?>
+    <div id="options">
+        <span id="search">   
+            <?php echo '<form action="?" method="post"style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
+        </span>
+        <span id="userOptions">
+            <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
+            <?php if ($loggedInUser == "None"){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
+            <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
+            <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';}
+            ?>
+        </span>
     </div>
 
-    
+    <!-- Content feed-->
     <div class="feed" id="feed">
         Your feed<br>
 
@@ -102,7 +108,6 @@ if (isset($_POST["new_status"])){
         <?php   
         //Count how many comments are in the the thread
         $currentUserFriendsString = "'".implode("', '", $currentUserFriendsArray)."'";
-        $debug5 = $currentUserFriendsString;
         $query = "SELECT * FROM posts WHERE post_author IN ($currentUserFriendsString) OR post_author = '$loggedInUser' ORDER BY date_submitted DESC";
         $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
         $posts_count = sqlsrv_num_rows($posts_array);

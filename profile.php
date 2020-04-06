@@ -27,10 +27,40 @@ $serverName = "localhost\sqlexpress";
 $connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"password123");
 $conn = sqlsrv_connect($serverName, $connectionInfo);
 
+//Connect to database
+$serverName = "localhost\sqlexpress";
+$connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"password123");
+$conn = sqlsrv_connect($serverName, $connectionInfo);
+
+//Get userID of loggedinUser
+$getCurrentUserIDQuery = "SELECT id FROM users WHERE username = '$loggedInUser'";
+$getCurrentUserID = sqlsrv_query($conn, $getCurrentUserIDQuery, array());
+$currentUserID = sqlsrv_fetch_array($getCurrentUserID);
+$currentUserID = $currentUserID[0];
+
+//Count friends of loggedInUser
+$getCurrentUserFriendsQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID'";
+$currentUserFriends = sqlsrv_query($conn, $getCurrentUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
+$currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends);
+
+//Get friends of loggedInUser as array of user IDs
+$currentUserFriendsArray = array();
+for ($x = 1; $x < $currentUserFriendsCount + 1; $x++){
+    $currentUserFriendsRow = sqlsrv_fetch_array($currentUserFriends, SQLSRV_FETCH_NUMERIC); //Select next row
+    array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);}
+
+//Convert currentUserFriendsArray from user IDs to usernames
+foreach ($currentUserFriendsArray as &$value){
+    $convertQuery = " SELECT username FROM users WHERE id = '$value' ";
+    $convert = sqlsrv_query($conn, $convertQuery);
+    $convert = sqlsrv_fetch_array($convert);
+    $value = $convert[0];}
+
+//If new status has been posted
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
 
-    //To calculate new comment ID, count number of rows in database and add 1
+    //To calculate new post ID, count number of rows in database and add 1
     $countExistingPostsQuery = "SELECT * FROM posts";
     $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
     $posts_count = sqlsrv_num_rows( $countExistingPosts );
@@ -49,19 +79,26 @@ if (isset($_POST["new_status"])){
     <link rel="stylesheet" type="text/css" href="default.css">
 </head>
 <body>
-    <center>
+<center>
+    <!--Logo-->
     <div class="header" id="header">
         <h1><a href="index.php">Social Network</a></h1>
     </div>
 
     <!--Options bar-->
-    <div class="options" id="options">
-        <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
-        <?php if ($loggedInUser == "None"){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
-        <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
-        <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';} ?>
+    <div id="options">
+        <span id="search">   
+            <?php echo '<form action="?" method="post"style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
+        </span>
+        <span id="userOptions">
+            <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
+            <?php if ($loggedInUser == "None"){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
+            <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
+            <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';}
+            ?>
+        </span>
     </div>
-
+    
     <div class="main">
         <span class="wall" id="wall">
 
@@ -101,10 +138,11 @@ if (isset($_POST["new_status"])){
         </span>
         <span class="sidebar">
             <?php
-                echo nl2br(
-                    "Viewing ".$selectedUser."'s profile\n".
-                    "Add friend"
-                );
+                echo nl2br("Viewing ".$selectedUser."'s profile\n");
+                if (in_array($selectedUser, $currentUserFriendsArray)){
+                    echo nl2br("You are friends\n");}
+                else {
+                    echo nl2br("Add friend\n");}
             ?>
         </span
     </div>
