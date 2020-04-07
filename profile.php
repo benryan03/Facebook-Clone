@@ -88,7 +88,7 @@ if (isset($_POST["new_status"])){
     <!--Options bar-->
     <div id="options">
         <span id="search">   
-            <?php echo '<form action="?" method="post"style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
+            <?php echo '<form action="search.php" method="post"style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
         </span>
         <span id="userOptions">
             <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>

@@ -83,7 +83,7 @@ if (isset($_POST["new_status"])){
     <!--Options bar-->
     <div id="options">
         <span id="search">   
-            <?php echo '<form action="?" method="post"style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
+            <?php echo '<form action="search.php" method="post" style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
         </span>
         <span id="userOptions">
             <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
@@ -94,8 +94,9 @@ if (isset($_POST["new_status"])){
         </span>
     </div>
 
+
     <!-- Content feed-->
-    <div class="feed" id="feed">
+    <div class="feed">
         Your feed<br>
 
         <!--Post a status-->
@@ -121,6 +122,14 @@ if (isset($_POST["new_status"])){
                 "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
                 $posts_array_row[1]."\n\n");
         }
+
+
+
+
+
+
+
+
         ?>
     </div>
     <div class="debug">
