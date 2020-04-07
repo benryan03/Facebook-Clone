@@ -16,7 +16,7 @@ $confirmPasswordError = "";
 $submitError = "";
 $errorStatus = false;
 date_default_timezone_set("America/New_York");
-$timestamp = date("Y/m/d h:i:sa");
+$timestamp = date("m/d/Y h:i:sa");
 
 if (!empty($_POST["submit"])){                  //if submit button clicked, then validate inputs
     $username = trim($_POST["username"]);       //trim() removes whitespace from  both sides of input

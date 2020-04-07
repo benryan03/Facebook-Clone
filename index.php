@@ -18,7 +18,7 @@ else {
     $selectedUser = "None";}
 
 date_default_timezone_set("America/New_York");
-$timestamp = date("d/m/Y h:i:sa");
+$timestamp = date("m/d/Y h:i:sa");
 
 
 //Connect to database
