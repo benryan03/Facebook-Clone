@@ -66,7 +66,7 @@ if (isset($_POST["new_status"])){
     $posts_count = sqlsrv_num_rows( $countExistingPosts );
     $newPostID = $posts_count + 1;
 
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$currentUserID') ";
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser') ";
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
@@ -82,7 +82,7 @@ if (isset($_POST["newWallPost"])){
     $posts_count = sqlsrv_num_rows( $countExistingPosts );
     $newPostID = $posts_count + 1;
 
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newWallPost', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$selectedUserID') ";
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newWallPost', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser') ";
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
