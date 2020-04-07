@@ -61,11 +61,33 @@ $conn = sqlsrv_connect($serverName, $connectionInfo);
     <!--Search results-->
     <div class="contents">
         <div id="searchResults">
-            Results for <?php echo $search ?><br>
+            <?php
 
+                echo nl2br("User results for " . $search . ":\n\n");
+
+                //Count how many users were returned
+                $query = "SELECT username FROM users WHERE username LIKE '%$search%'";
+                $userResultsArray = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
+                $userResultsCount = sqlsrv_num_rows($userResultsArray);
+                
+                if ($userResultsCount != 0){
+                    for ($x = 1; $x < $userResultsCount + 1; $x++){
+                        $userResultsArrayRow = sqlsrv_fetch_array($userResultsArray, SQLSRV_FETCH_NUMERIC); //Select next row in $query
+                            
+                        //Display a user
+                        echo nl2br("<font color='#0080ff'><b><a href='profile.php?selectedUser=".$userResultsArrayRow[0]."'>".$userResultsArrayRow[0]."</a></b></font>\n\n");
+                    }
+                }
+                else {
+                    echo "No results found.";
+                }
+                
+
+            ?>
         </div>
     </div>
     <div class="debug">
+
     </div>
     </center>
 </body>
