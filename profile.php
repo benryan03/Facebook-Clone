@@ -138,8 +138,13 @@ if (isset($_POST["new_status"])){
         </span>
         <span class="sidebar">
             <?php
-                echo nl2br("Viewing ".$selectedUser."'s profile\n");
-                if (in_array($selectedUser, $currentUserFriendsArray)){
+                if ($selectedUser == $loggedInUser){
+                    echo nl2br("Viewing your profile\n");}
+                else{
+                echo nl2br("Viewing ".$selectedUser."'s profile\n");}
+
+                if ($selectedUser == $loggedInUser){}
+                elseif (in_array($selectedUser, $currentUserFriendsArray)){
                     echo nl2br("You are friends\n");}
                 else {
                     echo nl2br("Add friend\n");}
