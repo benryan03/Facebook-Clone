@@ -11,26 +11,26 @@ else{
 if ($loggedInUser == "None"){
     header("Location:login.php");}
 
+//Connect to database
+$serverName = "localhost\sqlexpress";
+$connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"password123");
+$conn = sqlsrv_connect($serverName, $connectionInfo);
+
 //Check if user was selected
 if (isset($_GET["selectedUser"])){
-    $selectedUser = $_GET["selectedUser"];}
+    $selectedUser = $_GET["selectedUser"];
+        
+    //Get userID of selectedUser
+    $getSelectedUserIDQuery = "SELECT id FROM users WHERE username = '$selectedUser'";
+    $getSelectedUserID = sqlsrv_query($conn, $getSelectedUserIDQuery, array());
+    $selectedUserID = sqlsrv_fetch_array($getSelectedUserID);
+    $selectedUserID = $selectedUserID[0];
+}
 else {
     $selectedUser = "None";}
 
 date_default_timezone_set("America/New_York");
 $timestamp = date("m/d/Y h:i:sa");
-
-$debug = "";
-
-//Connect to database
-$serverName = "localhost\sqlexpress";
-$connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"password123");
-$conn = sqlsrv_connect($serverName, $connectionInfo);
-
-//Connect to database
-$serverName = "localhost\sqlexpress";
-$connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"password123");
-$conn = sqlsrv_connect($serverName, $connectionInfo);
 
 //Get userID of loggedinUser
 $getCurrentUserIDQuery = "SELECT id FROM users WHERE username = '$loggedInUser'";
@@ -56,7 +56,7 @@ foreach ($currentUserFriendsArray as &$value){
     $convert = sqlsrv_fetch_array($convert);
     $value = $convert[0];}
 
-//If new status has been posted
+//If $loggedInUser posts a status to their own Wall
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
 
@@ -66,7 +66,23 @@ if (isset($_POST["new_status"])){
     $posts_count = sqlsrv_num_rows( $countExistingPosts );
     $newPostID = $posts_count + 1;
 
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0') ";
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$currentUserID') ";
+    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
+    if (!$newPostSubmit){
+        print_r(sqlsrv_errors());}
+}
+
+//If $loggedInUser posts a status to a friend's Wall
+if (isset($_POST["newWallPost"])){
+    $newWallPost = $_POST["newWallPost"];
+
+    //To calculate new post ID, count number of rows in database and add 1
+    $countExistingPostsQuery = "SELECT * FROM posts";
+    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
+    $posts_count = sqlsrv_num_rows( $countExistingPosts );
+    $newPostID = $posts_count + 1;
+
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newWallPost', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$selectedUserID') ";
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
@@ -108,19 +124,26 @@ if (isset($_POST["new_status"])){
             else {
                 echo nl2br($selectedUser."'s Wall");
             }
-            ?>
 
-            <!--Post a status-->
-            <form action="?" method="post">
-            <textarea name="new_status" rows="1" cols="40" placeholder="Post a status"></textarea>
-            <input type="submit" value="Submit" name="submit_status"><br>
-            <div class="error" id="status_error"><br></div>
-            </form>
-
-            <?php
+            if ($selectedUser == $loggedInUser){
+                //Post a status on your Wall
+                echo nl2br('
+                <form action="profile.php?selectedUser='.$selectedUser.'" method="post">'.
+                '<textarea name="new_status" rows="1" cols="40" placeholder="Post a status"></textarea><input type="submit" value="Submit" name="submit_status"><br>'.
+                '<div class="error" id="status_error"><br></div>'.
+                '</form>');
+            }
+            else {
+                //Post on $selectedUser's Wall
+                echo nl2br('
+                <form action="profile.php?selectedUser='.$selectedUser.'" method="post">'.
+                '<textarea name="newWallPost" rows="1" cols="40" placeholder="Post on '.$selectedUser.'\'s Wall"></textarea><input type="submit" value="Submit" name="submitWallPost"><br>'.
+                '<div class="error" id="status_error"><br></div>'.
+                '</form>');
+            }
 
             //Count how many comments are in the the thread
-            $query = "SELECT * FROM posts WHERE post_author = '$selectedUser' ORDER BY date_submitted DESC";
+            $query = "SELECT * FROM posts WHERE wall = '$selectedUserID' ORDER BY date_submitted DESC";
             $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
             $posts_count = sqlsrv_num_rows($posts_array);
 
@@ -130,7 +153,7 @@ if (isset($_POST["new_status"])){
                 //Display a post
                 echo nl2br(
                     "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font>" .
-                    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
+                    "<font color='gray' size='2'> " . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
                     $posts_array_row[1]."\n\n"
                 );
             }
