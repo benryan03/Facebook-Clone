@@ -3,7 +3,7 @@ session_start();
 
 //If no user is logged in, setLoggedInUser to None
 if (!isset($_SESSION["loggedInUser"])){
-    $_SESSION["loggedInUser"] = "None";}
+    $loggedInUser = "None";}
 else {
     $loggedInUser = $_SESSION["loggedInUser"];}
 
