@@ -44,8 +44,14 @@ if (isset($_GET["addFriend"])){
     $addFriend = sqlsrv_query($conn, $addFriendQuery);
 }
 
+//If user accepted a friend invite
+if (isset($_GET["acceptFriend"])){
+    $acceptFriendQuery = "UPDATE friends SET accepted = 'True' WHERE friendid = '$currentUserID'";
+    $acceptFriend = sqlsrv_query($conn, $acceptFriendQuery);
+}
+
 //Get friends of loggedInUser
-$getCurrentUserFriendsQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID' AND accepted = 'True'";
+$getCurrentUserFriendsQuery =  "SELECT userid, friendid FROM friends WHERE (accepted = 'True' AND userid = '$currentUserID') OR (accepted = 'True' AND friendid = '$currentUserID') ";
 $currentUserFriends = sqlsrv_query($conn, $getCurrentUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
 $currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends); //Count friends for loop
 
@@ -53,26 +59,41 @@ $currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends); //Count friends
 $currentUserFriendsArray = array();
 for ($x = 1; $x < $currentUserFriendsCount + 1; $x++){
     $currentUserFriendsRow = sqlsrv_fetch_array($currentUserFriends, SQLSRV_FETCH_NUMERIC); //Select next row
-    array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);}
+    array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);
+    array_push($currentUserFriendsArray, $currentUserFriendsRow[1]);}
 
+/*
 //Convert currentUserFriendsArray from user IDs to usernames
 foreach ($currentUserFriendsArray as &$value){
     $convertQuery = " SELECT username FROM users WHERE id = '$value' ";
     $convert = sqlsrv_query($conn, $convertQuery);
     $convert = sqlsrv_fetch_array($convert);
     $value = $convert[0];}
+*/
 
-//Get pending friend invites of loggedInUser
+
+//Get sent pending friend invites of loggedInUser
 $getCurrentUserPendingInvitesQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID' AND accepted = 'False'";
 $currentUserPendingInvites = sqlsrv_query($conn, $getCurrentUserPendingInvitesQuery, array(), array( "Scrollable" => 'static' ));
 $currentUserPendingInvitesCount = sqlsrv_num_rows($currentUserPendingInvites); //Count friends for loop
 
-//Get pending friend invites of loggedInUser as array of user IDs
+//Convert sent pending friend invites of loggedInUser to array of user IDs
 $currentUserPendingInvitesArray = array();
 for ($x = 1; $x < $currentUserPendingInvitesCount + 1; $x++){
     $currentUserPendingInvitesRow = sqlsrv_fetch_array($currentUserPendingInvites, SQLSRV_FETCH_NUMERIC); //Select next row
     array_push($currentUserPendingInvitesArray, $currentUserPendingInvitesRow[0]);}
- 
+
+//Get received pending friend invites of loggedInUser
+$getCurrentUserReceivedPendingInvitesQuery = "SELECT userid FROM friends WHERE friendid = '$currentUserID' AND accepted = 'False'";
+$currentUserReceivedPendingInvites = sqlsrv_query($conn, $getCurrentUserReceivedPendingInvitesQuery, array(), array( "Scrollable" => 'static' ));
+$currentUserReceivedPendingInvitesCount = sqlsrv_num_rows($currentUserReceivedPendingInvites); //Count friends for loop
+
+//Convert pending friend invites of loggedInUser to array of user IDs
+$currentUserReceivedPendingInvitesArray = array();
+for ($x = 1; $x < $currentUserReceivedPendingInvitesCount + 1; $x++){
+    $currentUserReceivedPendingInvitesRow = sqlsrv_fetch_array($currentUserReceivedPendingInvites, SQLSRV_FETCH_NUMERIC); //Select next row
+    array_push($currentUserReceivedPendingInvitesArray, $currentUserReceivedPendingInvitesRow[0]);}
+
 //If $loggedInUser posts a status to their own Wall
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
@@ -186,20 +207,33 @@ if (isset($_POST["newWallPost"])){
                     echo nl2br("Viewing ".$selectedUser."'s profile\n\n");
                 }
 
-                if ($selectedUser == $loggedInUser){
+
+
+
+
+
+                if ($selectedUserID == $currentUserID){
 
                 }
-                elseif (in_array($selectedUser, $currentUserFriendsArray)){
+                elseif (in_array($selectedUserID, $currentUserFriendsArray)){
                     echo nl2br("You are friends\n");
                 }
-                elseif (in_array($selectedUserID, $currentUserPendingInvitesArray)){
-                    echo nl2br("Friend request sent \n");
+                elseif (in_array($selectedUserID, $currentUserReceivedPendingInvitesArray)){
+                    echo nl2br("<a href='profile.php?acceptFriend&selectedUser=".$selectedUser."'>Accept friend request</a>\n");
                 }
-                elseif (!in_array($selectedUser, $currentUserFriendsArray)){
+                elseif (in_array($selectedUserID, $currentUserPendingInvitesArray)){
+                    echo nl2br("Friend request sent\n");
+                }
+                elseif (!in_array($selectedUserID, $currentUserFriendsArray)){
                     echo nl2br("<a href='profile.php?addFriend&selectedUser=".$selectedUser."'>Send friend request</a>\n");
                 }
             ?>
         </span>
+    </div>
+    <div>
+        <?php print_r($currentUserFriendsArray); ?>
+        <?php print_r($debug1); ?>
+
     </div>
     </center>
 </body>
