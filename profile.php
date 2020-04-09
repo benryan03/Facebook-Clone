@@ -207,11 +207,6 @@ if (isset($_POST["newWallPost"])){
                     echo nl2br("Viewing ".$selectedUser."'s profile\n\n");
                 }
 
-
-
-
-
-
                 if ($selectedUserID == $currentUserID){
 
                 }
@@ -229,11 +224,6 @@ if (isset($_POST["newWallPost"])){
                 }
             ?>
         </span>
-    </div>
-    <div>
-        <?php print_r($currentUserFriendsArray); ?>
-        <?php print_r($debug1); ?>
-
     </div>
     </center>
 </body>
