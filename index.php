@@ -11,44 +11,49 @@ else{
 if ($loggedInUser == "None"){
     header("Location:login.php");}
 
+/*
 //Check if user was selected
 if (isset($_GET["selectedUser"])){
     $selectedUser = $_GET["selectedUser"];}
 else {
     $selectedUser = "None";}
+*/
 
 date_default_timezone_set("America/New_York");
 $timestamp = date("m/d/Y h:i:sa");
-
 
 //Connect to database
 $serverName = "localhost\sqlexpress";
 $connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"password123");
 $conn = sqlsrv_connect($serverName, $connectionInfo);
 
-//Get userID of loggedinUser
+//Get userID of loggedInUser
 $getCurrentUserIDQuery = "SELECT id FROM users WHERE username = '$loggedInUser'";
 $getCurrentUserID = sqlsrv_query($conn, $getCurrentUserIDQuery, array());
 $currentUserID = sqlsrv_fetch_array($getCurrentUserID);
 $currentUserID = $currentUserID[0];
 
-//Count friends of loggedInUser
-$getCurrentUserFriendsQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID' AND accepted = 'True'";
+//Get friends of loggedInUser
+$getCurrentUserFriendsQuery =  "SELECT userid, friendid FROM friends WHERE (accepted = 'True' AND userid = '$currentUserID') OR (accepted = 'True' AND friendid = '$currentUserID') ";
 $currentUserFriends = sqlsrv_query($conn, $getCurrentUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
-$currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends);
+$currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends); //Count friends of loggedInUser
+
 
 //Get friends of loggedInUser as array of user IDs
 $currentUserFriendsArray = array();
 for ($x = 1; $x < $currentUserFriendsCount + 1; $x++){
     $currentUserFriendsRow = sqlsrv_fetch_array($currentUserFriends, SQLSRV_FETCH_NUMERIC); //Select next row
-    array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);}
+    array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);
+    array_push($currentUserFriendsArray, $currentUserFriendsRow[1]);}
 
+/*
 //Convert currentUserFriendsArray from user IDs to usernames
 foreach ($currentUserFriendsArray as &$value){
     $convertQuery = " SELECT username FROM users WHERE id = '$value' ";
     $convert = sqlsrv_query($conn, $convertQuery);
     $convert = sqlsrv_fetch_array($convert);
     $value = $convert[0];}
+*/
 
 //If new status has been posted
 if (isset($_POST["new_status"])){
@@ -109,7 +114,7 @@ if (isset($_POST["new_status"])){
         <?php   
         //Count how many comments are in the the thread
         $currentUserFriendsString = "'".implode("', '", $currentUserFriendsArray)."'";
-        $query = "SELECT * FROM posts WHERE post_author IN ($currentUserFriendsString) OR post_author = '$loggedInUser' ORDER BY date_submitted DESC";
+        $query = "SELECT * FROM posts WHERE post_author_id IN ($currentUserFriendsString) OR post_author = '$loggedInUser' ORDER BY date_submitted DESC";
         $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
         $posts_count = sqlsrv_num_rows($posts_array);
 
@@ -135,16 +140,7 @@ if (isset($_POST["new_status"])){
             }
         }
 
-
-
-
-
-
-
-
         ?>
-    </div>
-    <div class="debug">
     </div>
     </center>
 </body>
