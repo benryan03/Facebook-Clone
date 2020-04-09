@@ -72,7 +72,7 @@ if (!empty($_POST["submit"])){                  //if submit button clicked, then
         $newUserID = $row_count + 1;
 
         //Write new account to database
-        $userRegisterQuery = "INSERT INTO Users VALUES ('$newUserID', '$username', '$password', '$timestamp', 'a', '0', 'Null')";
+        $userRegisterQuery = "INSERT INTO Users VALUES ('$newUserID', '$username', '$password', '$timestamp', 'a', '0')";
         $writeToDatabase = sqlsrv_query($conn, $userRegisterQuery);
 
         //Error messages 
