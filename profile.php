@@ -38,10 +38,16 @@ $getCurrentUserID = sqlsrv_query($conn, $getCurrentUserIDQuery, array());
 $currentUserID = sqlsrv_fetch_array($getCurrentUserID);
 $currentUserID = $currentUserID[0];
 
-//Count friends of loggedInUser
-$getCurrentUserFriendsQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID'";
+//If user sent a friend invite
+if (isset($_GET["addFriend"])){
+    $addFriendQuery = "INSERT INTO friends VALUES ('$currentUserID', '$selectedUserID', 'False')";
+    $addFriend = sqlsrv_query($conn, $addFriendQuery);
+}
+
+//Get friends of loggedInUser
+$getCurrentUserFriendsQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID' AND accepted = 'True'";
 $currentUserFriends = sqlsrv_query($conn, $getCurrentUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
-$currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends);
+$currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends); //Count friends for loop
 
 //Get friends of loggedInUser as array of user IDs
 $currentUserFriendsArray = array();
@@ -56,6 +62,17 @@ foreach ($currentUserFriendsArray as &$value){
     $convert = sqlsrv_fetch_array($convert);
     $value = $convert[0];}
 
+//Get pending friend invites of loggedInUser
+$getCurrentUserPendingInvitesQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID' AND accepted = 'False'";
+$currentUserPendingInvites = sqlsrv_query($conn, $getCurrentUserPendingInvitesQuery, array(), array( "Scrollable" => 'static' ));
+$currentUserPendingInvitesCount = sqlsrv_num_rows($currentUserPendingInvites); //Count friends for loop
+
+//Get pending friend invites of loggedInUser as array of user IDs
+$currentUserPendingInvitesArray = array();
+for ($x = 1; $x < $currentUserPendingInvitesCount + 1; $x++){
+    $currentUserPendingInvitesRow = sqlsrv_fetch_array($currentUserPendingInvites, SQLSRV_FETCH_NUMERIC); //Select next row
+    array_push($currentUserPendingInvitesArray, $currentUserPendingInvitesRow[0]);}
+ 
 //If $loggedInUser posts a status to their own Wall
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
@@ -87,6 +104,7 @@ if (isset($_POST["newWallPost"])){
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
 }
+
 ?>
 
 <html>
@@ -162,17 +180,26 @@ if (isset($_POST["newWallPost"])){
         <span class="sidebar">
             <?php
                 if ($selectedUser == $loggedInUser){
-                    echo nl2br("Viewing your profile\n");}
+                    echo nl2br("Viewing your profile\n");
+                }
                 else{
-                echo nl2br("Viewing ".$selectedUser."'s profile\n");}
+                    echo nl2br("Viewing ".$selectedUser."'s profile\n\n");
+                }
 
-                if ($selectedUser == $loggedInUser){}
+                if ($selectedUser == $loggedInUser){
+
+                }
                 elseif (in_array($selectedUser, $currentUserFriendsArray)){
-                    echo nl2br("You are friends\n");}
-                else {
-                    echo nl2br("Add friend\n");}
+                    echo nl2br("You are friends\n");
+                }
+                elseif (in_array($selectedUserID, $currentUserPendingInvitesArray)){
+                    echo nl2br("Friend request sent \n");
+                }
+                elseif (!in_array($selectedUser, $currentUserFriendsArray)){
+                    echo nl2br("<a href='profile.php?addFriend&selectedUser=".$selectedUser."'>Send friend request</a>\n");
+                }
             ?>
-        </span
+        </span>
     </div>
     </center>
 </body>

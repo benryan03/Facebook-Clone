@@ -33,7 +33,7 @@ $currentUserID = sqlsrv_fetch_array($getCurrentUserID);
 $currentUserID = $currentUserID[0];
 
 //Count friends of loggedInUser
-$getCurrentUserFriendsQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID'";
+$getCurrentUserFriendsQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID' AND accepted = 'True'";
 $currentUserFriends = sqlsrv_query($conn, $getCurrentUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
 $currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends);
 
