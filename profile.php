@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set("America/New_York");
+$timestamp = date("m/d/Y h:i:sa");
 
 //If no user is logged in, setLoggedInUser to None
 session_start();
@@ -16,7 +18,13 @@ $serverName = "localhost\sqlexpress";
 $connectionInfo = array("Database"=>"social_network", "UID"=>"ben", "PWD"=>"password123");
 $conn = sqlsrv_connect($serverName, $connectionInfo);
 
-//Check if user was selected
+//Get userID of loggedinUser
+$getCurrentUserIDQuery = "SELECT id FROM users WHERE username = '$loggedInUser'";
+$getCurrentUserID = sqlsrv_query($conn, $getCurrentUserIDQuery, array());
+$currentUserID = sqlsrv_fetch_array($getCurrentUserID);
+$currentUserID = $currentUserID[0];
+
+//Check if user was selected (on this page, user should always be selected)
 if (isset($_GET["selectedUser"])){
     $selectedUser = $_GET["selectedUser"];
         
@@ -28,15 +36,6 @@ if (isset($_GET["selectedUser"])){
 }
 else {
     $selectedUser = "None";}
-
-date_default_timezone_set("America/New_York");
-$timestamp = date("m/d/Y h:i:sa");
-
-//Get userID of loggedinUser
-$getCurrentUserIDQuery = "SELECT id FROM users WHERE username = '$loggedInUser'";
-$getCurrentUserID = sqlsrv_query($conn, $getCurrentUserIDQuery, array());
-$currentUserID = sqlsrv_fetch_array($getCurrentUserID);
-$currentUserID = $currentUserID[0];
 
 //If user sent a friend invite
 if (isset($_GET["addFriend"])){
@@ -55,22 +54,12 @@ $getCurrentUserFriendsQuery =  "SELECT userid, friendid FROM friends WHERE (acce
 $currentUserFriends = sqlsrv_query($conn, $getCurrentUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
 $currentUserFriendsCount = sqlsrv_num_rows($currentUserFriends); //Count friends for loop
 
-//Get friends of loggedInUser as array of user IDs
+//Convert friends of loggedInUser to array of user IDs
 $currentUserFriendsArray = array();
 for ($x = 1; $x < $currentUserFriendsCount + 1; $x++){
     $currentUserFriendsRow = sqlsrv_fetch_array($currentUserFriends, SQLSRV_FETCH_NUMERIC); //Select next row
     array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);
     array_push($currentUserFriendsArray, $currentUserFriendsRow[1]);}
-
-/*
-//Convert currentUserFriendsArray from user IDs to usernames
-foreach ($currentUserFriendsArray as &$value){
-    $convertQuery = " SELECT username FROM users WHERE id = '$value' ";
-    $convert = sqlsrv_query($conn, $convertQuery);
-    $convert = sqlsrv_fetch_array($convert);
-    $value = $convert[0];}
-*/
-
 
 //Get sent pending friend invites of loggedInUser
 $getCurrentUserPendingInvitesQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID' AND accepted = 'False'";
