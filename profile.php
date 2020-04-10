@@ -30,8 +30,6 @@ if (isset($_GET["selectedUser"])){
     $selectedUserID = sqlsrv_fetch_array($getSelectedUserID);
     $selectedUserID = $selectedUserID[0];
 }
-else {
-    $selectedUser = "None";}
 
 //If user sent a friend invite
 if (isset($_GET["addFriend"])){
@@ -78,6 +76,47 @@ $currentUserReceivedPendingInvitesArray = array();
 for ($x = 1; $x < $pendingRequestsCount + 1; $x++){
     $currentUserReceivedPendingInvitesRow = sqlsrv_fetch_array($currentUserReceivedPendingInvites, SQLSRV_FETCH_NUMERIC); //Select next row
     array_push($currentUserReceivedPendingInvitesArray, $currentUserReceivedPendingInvitesRow[0]);}
+
+//
+//For friends list of selectedUser in sidebar
+//
+
+//Get friends of selectedUser
+$getSelectedUserFriendsQuery =  "SELECT userid, friendid FROM friends WHERE (accepted = 'True' AND userid = '$selectedUserID') OR (accepted = 'True' AND friendid = '$selectedUserID') ";
+$selectedUserFriends = sqlsrv_query($conn, $getSelectedUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
+$selectedUserFriendsCount2 = sqlsrv_num_rows($selectedUserFriends); //Count friends for loop
+
+//Convert friends of loggedInUser to array of user IDs
+$selectedUserFriendsArray = array();
+for ($x = 1; $x < $selectedUserFriendsCount2 + 1; $x++){
+    $selectedUserFriendsRow = sqlsrv_fetch_array($selectedUserFriends, SQLSRV_FETCH_NUMERIC); //Select next row
+    array_push($selectedUserFriendsArray, $selectedUserFriendsRow[0]);
+    array_push($selectedUserFriendsArray, $selectedUserFriendsRow[1]);}
+
+$selectedUserFriendsArray = array_unique($selectedUserFriendsArray);
+$selectedUserFriendsArray = array_values($selectedUserFriendsArray);
+$selectedUserFriendsCount = count($selectedUserFriendsArray);
+
+//Convert selectedUserFriendsArray from user IDs to usernames	
+foreach ($selectedUserFriendsArray as &$value){	
+    $convertQuery = " SELECT username FROM users WHERE id = '$value' ";	
+    $convert = sqlsrv_query($conn, $convertQuery);	
+    $convert = sqlsrv_fetch_array($convert);	
+    $value = $convert[0];}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //If $loggedInUser posts a status to their own Wall
 if (isset($_POST["new_status"])){
@@ -202,7 +241,7 @@ if (isset($_POST["newWallPost"])){
         <span class="sidebar">
             <?php
                 if ($selectedUser == $loggedInUser){
-                    echo nl2br("Viewing your profile\n");
+                    echo nl2br("Viewing your profile\n\n");
                 }
                 else{
                     echo nl2br("Viewing ".$selectedUser."'s profile\n\n");
@@ -212,17 +251,26 @@ if (isset($_POST["newWallPost"])){
 
                 }
                 elseif (in_array($selectedUserID, $currentUserFriendsArray)){
-                    echo nl2br("You are friends\n");
+                    echo nl2br("You are friends\n\n".$selectedUser."'s friends: \n");
                 }
                 elseif (in_array($selectedUserID, $currentUserReceivedPendingInvitesArray)){
-                    echo nl2br("<a href='profile.php?acceptFriend&selectedUser=".$selectedUser."'>Accept friend request</a>\n");
+                    echo nl2br("<a href='profile.php?acceptFriend&selectedUser=".$selectedUser."'>Accept friend request</a>\n\n");
                 }
                 elseif (in_array($selectedUserID, $currentUserPendingInvitesArray)){
-                    echo nl2br("Friend request sent\n");
+                    echo nl2br("Friend request sent\n\n");
                 }
                 elseif (!in_array($selectedUserID, $currentUserFriendsArray)){
-                    echo nl2br("<a href='profile.php?addFriend&selectedUser=".$selectedUser."'>Send friend request</a>\n");
+                    echo nl2br("<a href='profile.php?addFriend&selectedUser=".$selectedUser."'>Send friend request</a>\n\n");
                 }
+                
+                if ($selectedUserFriendsCount > 0){
+                    for ($x = 0; $x < $selectedUserFriendsCount; $x++){
+
+                        //Display a user
+                        echo nl2br("<font color='#0080ff'><b><a href='profile.php?selectedUser=".$selectedUserFriendsArray[$x]."'>".$selectedUserFriendsArray[$x]."</a></b></font>, ");
+                    }
+                }
+
             ?>
         </span>
     </div>
