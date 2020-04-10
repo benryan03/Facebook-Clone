@@ -36,6 +36,12 @@ for ($x = 1; $x < $currentUserFriendsCount + 1; $x++){
     array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);
     array_push($currentUserFriendsArray, $currentUserFriendsRow[1]);}
 
+//Get pending friend requests of loggedInUser
+$getPendingRequestsQuery = "SELECT * FROM friends WHERE friendid = '$currentUserID' AND accepted = 'False'";
+$getPendingRequests = sqlsrv_query($conn, $getPendingRequestsQuery, array(), array( "Scrollable" => 'static' ));
+$pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
+
+
 //If new status has been posted
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
@@ -69,7 +75,13 @@ if (isset($_POST["new_status"])){
     <!--Options bar-->
     <div id="options">
         <span id="search">   
-            <?php echo '<form action="search.php" method="post" style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
+            <?php
+                echo '<form action="search.php" method="post" style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>';
+                if ($pendingRequestsCount > 0){
+                    echo '&nbsp;&nbsp;&nbsp;&nbsp;<a href="requests.php" id="requests">'.$pendingRequestsCount.' new friend requests</a>';
+                }
+            ?>
+
         </span>
         <span id="userOptions">
             <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>

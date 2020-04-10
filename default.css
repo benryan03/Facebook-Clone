@@ -129,3 +129,9 @@ body {
     color: #0080ff;
     text-decoration: none;
 }
+
+
+
+#search a {
+    color: red;
+}
