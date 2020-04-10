@@ -1,27 +1,13 @@
 <?php
 
-//If no user is logged in, setLoggedInUser to None
+//Get logged in user. If no user is logged in, redirect to login page.
 session_start();
 if (!isset($_SESSION["loggedInUser"])){
-    $loggedInUser = "None";}
+    header("Location:login.php");}
 else{
     $loggedInUser = $_SESSION["loggedInUser"];}
 
-//If no user is logged in, redirect to login page
-if ($loggedInUser == "None"){
-    header("Location:login.php");}
-
-/*
-//Check if user was selected
-if (isset($_GET["selectedUser"])){
-    $selectedUser = $_GET["selectedUser"];}
-else {
-    $selectedUser = "None";}
-
-date_default_timezone_set("America/New_York");
-$timestamp = date("m/d/Y h:i:sa");
-*/
-
+//Get search term
 if (isset($_POST["search"])){
     $search = $_POST["search"];}
 
@@ -65,13 +51,19 @@ $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
                 }
             ?>
         </span>
+        <span id="userOptions">
+            <?php if (!isset($_SESSION["loggedInUser"])){echo '<a href="register.php">Register</a>&nbsp;';} ?>
+            <?php if (!isset($_SESSION["loggedInUser"])){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
+            <?php if (isset($_SESSION["loggedInUser"])){echo '<a href="logout.php">Log out</a>';} ?>
+            <?php if (isset($_SESSION["loggedInUser"])){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';}
+            ?>
+        </span>
     </div>
 
     <!--Search results-->
     <div class="contents">
         <div id="searchResults">
             <?php
-
                 echo nl2br("User results for " . $search . ":\n\n");
 
                 //Count how many users were returned
@@ -82,7 +74,7 @@ $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
                 if ($userResultsCount != 0){
                     for ($x = 1; $x < $userResultsCount + 1; $x++){
                         $userResultsArrayRow = sqlsrv_fetch_array($userResultsArray, SQLSRV_FETCH_NUMERIC); //Select next row in $query
-                            
+
                         //Display a user
                         echo nl2br("<font color='#0080ff'><b><a href='profile.php?selectedUser=".$userResultsArrayRow[0]."'>".$userResultsArrayRow[0]."</a></b></font>\n\n");
                     }
@@ -91,7 +83,6 @@ $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
                     echo "No results found.";
                 }
                 
-
             ?>
         </div>
     </div>

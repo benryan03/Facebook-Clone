@@ -1,14 +1,10 @@
 <?php
-//If no user is logged in, setLoggedInUser to None
+//Get logged in user. If no user is logged in, redirect to login page.
 session_start();
 if (!isset($_SESSION["loggedInUser"])){
-    $loggedInUser = "None";}
+    header("Location:login.php");}
 else{
     $loggedInUser = $_SESSION["loggedInUser"];}
-
-//If no user is logged in, redirect to login page
-if ($loggedInUser == "None"){
-    header("Location:login.php");}
 
 //Connect to database
 $serverName = "localhost\sqlexpress";
@@ -59,10 +55,10 @@ foreach ($currentUserReceivedPendingInvitesArray as &$value){
         <?php echo '<form action="?" method="post"style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
     </span>
     <span id="userOptions">
-        <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
-        <?php if ($loggedInUser == "None"){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
-        <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
-        <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';}
+        <?php if (!isset($_SESSION["loggedInUser"])){echo '<a href="register.php">Register</a>&nbsp;';} ?>
+        <?php if (!isset($_SESSION["loggedInUser"])){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
+        <?php if (isset($_SESSION["loggedInUser"])){echo '<a href="logout.php">Log out</a>';} ?>
+        <?php if (isset($_SESSION["loggedInUser"])){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';}
         ?>
     </span>
 </div>

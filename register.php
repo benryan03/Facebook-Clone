@@ -1,12 +1,5 @@
 <?php
 
-//If no user is logged in, setLoggedInUser to None
-if (!isset($_SESSION["loggedInUser"])){
-    $_SESSION["loggedInUser"] = "None";
-}
-
-$loggedInUser = $_SESSION["loggedInUser"];
-
 $username = "";
 $password = "";
 $confirmPassword = "";
@@ -114,10 +107,10 @@ if (!empty($_POST["submit"])){                  //if submit button clicked, then
         <?php echo '<form action="?" method="post"style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
     </span>
     <span id="userOptions">
-        <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
-        <?php if ($loggedInUser == "None"){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
-        <?php if ($loggedInUser != "None"){echo '<a href="logout.php">Log out</a>';} ?>
-        <?php if ($loggedInUser != "None"){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';}
+        <?php if (!isset($_SESSION["loggedInUser"])){echo '<a href="register.php">Register</a>&nbsp;';} ?>
+        <?php if (!isset($_SESSION["loggedInUser"])){echo '<a href="login.php"44>Log in</a>&nbsp;';} ?>
+        <?php if (isset($_SESSION["loggedInUser"])){echo '<a href="logout.php">Log out</a>';} ?>
+        <?php if (isset($_SESSION["loggedInUser"])){echo 'Welcome, <a href="profile.php?selectedUser=' . $loggedInUser . '">' .$loggedInUser. '</a>';}
         ?>
     </span>
 </div>
