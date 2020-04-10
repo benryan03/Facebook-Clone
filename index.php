@@ -78,7 +78,7 @@ if (isset($_POST["new_status"])){
             <?php
                 echo '<form action="search.php" method="post" style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>';
                 if ($pendingRequestsCount > 0){
-                    echo '&nbsp;&nbsp;&nbsp;&nbsp;<a href="requests.php" id="requests">'.$pendingRequestsCount.' new friend requests</a>';
+                    echo '&nbsp;&nbsp;<a href="requests.php" id="requests">'.$pendingRequestsCount.' new friend requests</a>';
                 }
             ?>
 
