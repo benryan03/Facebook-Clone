@@ -75,11 +75,11 @@ for ($x = 1; $x < $currentUserPendingInvitesCount + 1; $x++){
 //Get received pending friend invites of loggedInUser
 $getCurrentUserReceivedPendingInvitesQuery = "SELECT userid FROM friends WHERE friendid = '$currentUserID' AND accepted = 'False'";
 $currentUserReceivedPendingInvites = sqlsrv_query($conn, $getCurrentUserReceivedPendingInvitesQuery, array(), array( "Scrollable" => 'static' ));
-$currentUserReceivedPendingInvitesCount = sqlsrv_num_rows($currentUserReceivedPendingInvites); //Count friends for loop
+$pendingRequestsCount = sqlsrv_num_rows($currentUserReceivedPendingInvites); //Count pending invites
 
 //Convert pending friend invites of loggedInUser to array of user IDs
 $currentUserReceivedPendingInvitesArray = array();
-for ($x = 1; $x < $currentUserReceivedPendingInvitesCount + 1; $x++){
+for ($x = 1; $x < $pendingRequestsCount + 1; $x++){
     $currentUserReceivedPendingInvitesRow = sqlsrv_fetch_array($currentUserReceivedPendingInvites, SQLSRV_FETCH_NUMERIC); //Select next row
     array_push($currentUserReceivedPendingInvitesArray, $currentUserReceivedPendingInvitesRow[0]);}
 
@@ -132,7 +132,12 @@ if (isset($_POST["newWallPost"])){
     <!--Options bar-->
     <div id="options">
         <span id="search">   
-            <?php echo '<form action="search.php" method="post"style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>'; ?>
+            <?php
+                echo '<form action="search.php" method="post" style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>';
+                if ($pendingRequestsCount > 0){
+                    echo '&nbsp;&nbsp;<a href="requests.php" id="requests">'.$pendingRequestsCount.' new friend requests</a>';
+                }
+            ?>
         </span>
         <span id="userOptions">
             <?php if ($loggedInUser == "None"){echo '<a href="register.php">Register</a>&nbsp;';} ?>
