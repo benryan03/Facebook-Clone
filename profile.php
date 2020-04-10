@@ -148,7 +148,8 @@ if (isset($_POST["newWallPost"])){
 
             <?php 
             if ($selectedUser == $loggedInUser){
-                echo "Your Wall";}
+                echo "Your Wall";
+            }
             else {
                 echo nl2br($selectedUser."'s Wall");
             }
@@ -161,7 +162,7 @@ if (isset($_POST["newWallPost"])){
                 '<div class="error" id="status_error"><br></div>'.
                 '</form>');
             }
-            else {
+            elseif (in_array($selectedUserID, $currentUserFriendsArray)){ //If users are friends
                 //Post on $selectedUser's Wall
                 echo nl2br('
                 <form action="profile.php?selectedUser='.$selectedUser.'" method="post">'.
@@ -169,21 +170,31 @@ if (isset($_POST["newWallPost"])){
                 '<div class="error" id="status_error"><br></div>'.
                 '</form>');
             }
+            else { //If users are not friends, do not display status entry
+                echo "<br><br>";
+            }
 
-            //Count how many comments are in the the thread
-            $query = "SELECT * FROM posts WHERE wall = '$selectedUserID' ORDER BY date_submitted DESC";
-            $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
-            $posts_count = sqlsrv_num_rows($posts_array);
+            //If users are friends, display posts on selectedUser's Wall
+            if ($selectedUserID == $currentUserID || in_array($selectedUserID, $currentUserFriendsArray)){
+                //Count how many comments are in the the thread
+                $query = "SELECT * FROM posts WHERE wall = '$selectedUserID' ORDER BY date_submitted DESC";
+                $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
+                $posts_count = sqlsrv_num_rows($posts_array);
 
-            for ($x = 1; $x < $posts_count + 1; $x++){
-                $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
-                
-                //Display a post
-                echo nl2br(
-                    "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font>" .
-                    "<font color='gray' size='2'> " . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
-                    $posts_array_row[1]."\n\n"
-                );
+                for ($x = 1; $x < $posts_count + 1; $x++){
+                    $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
+                    
+                    //Display a post
+                    echo nl2br(
+                        "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font>" .
+                        "<font color='gray' size='2'> " . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
+                        $posts_array_row[1]."\n\n"
+                    );
+                }
+            }
+            //If users are not friends, do not display any posts
+            else {
+                echo "You are not friends with ".$selectedUser;
             }
             ?>
         </span>
