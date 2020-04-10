@@ -45,7 +45,7 @@ if (isset($_GET["addFriend"])){
 
 //If user accepted a friend invite
 if (isset($_GET["acceptFriend"])){
-    $acceptFriendQuery = "UPDATE friends SET accepted = 'True' WHERE friendid = '$currentUserID'";
+    $acceptFriendQuery = "UPDATE friends SET accepted = 'True' WHERE userid = '$selectedUserID' AND friendid = '$currentUserID'";
     $acceptFriend = sqlsrv_query($conn, $acceptFriendQuery);
 }
 
