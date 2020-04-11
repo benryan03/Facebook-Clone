@@ -55,6 +55,14 @@ for ($x = 1; $x < $currentUserFriendsCount + 1; $x++){
     array_push($currentUserFriendsArray, $currentUserFriendsRow[0]);
     array_push($currentUserFriendsArray, $currentUserFriendsRow[1]);}
 
+$currentUserFriendsArray = array_unique($currentUserFriendsArray);
+$currentUserFriendsArray = array_values($currentUserFriendsArray);
+$currentUserFriendsCount = count($currentUserFriendsArray);
+
+
+
+
+
 //Get sent pending friend invites of loggedInUser
 $getCurrentUserPendingInvitesQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID' AND accepted = 'False'";
 $currentUserPendingInvites = sqlsrv_query($conn, $getCurrentUserPendingInvitesQuery, array(), array( "Scrollable" => 'static' ));
@@ -233,7 +241,7 @@ if (isset($_POST["newWallPost"])){
         <span class="sidebar">
             <?php
                 if ($selectedUser == $loggedInUser){
-                    echo nl2br("Viewing your profile\n\nYour friends: ");
+                    echo nl2br("Viewing your profile\n\nYour friends(".($currentUserFriendsCount - 1)."): ");
                 }
                 else{
                     echo nl2br("Viewing ".$selectedUser."'s profile\n\n");
@@ -243,7 +251,7 @@ if (isset($_POST["newWallPost"])){
 
                 }
                 elseif (in_array($selectedUserID, $currentUserFriendsArray)){
-                    echo nl2br("You are friends\n\n".$selectedUser."'s friends: \n");
+                    echo nl2br("You are friends\n\n".$selectedUser."'s friends(".($selectedUserFriendsCount - 1)."): \n");
                 }
                 elseif (in_array($selectedUserID, $currentUserReceivedPendingInvitesArray)){
                     echo nl2br("<a href='profile.php?acceptFriend&selectedUser=".$selectedUser."'>Accept friend request</a>\n\n");
