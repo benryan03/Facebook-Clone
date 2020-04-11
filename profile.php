@@ -104,21 +104,10 @@ foreach ($selectedUserFriendsArray as &$value){
     $convert = sqlsrv_fetch_array($convert);	
     $value = $convert[0];}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//
 //If $loggedInUser posts a status to their own Wall
+//
+
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
 
@@ -134,7 +123,10 @@ if (isset($_POST["new_status"])){
         print_r(sqlsrv_errors());}
 }
 
+//
 //If $loggedInUser posts a status to a friend's Wall
+//
+
 if (isset($_POST["newWallPost"])){
     $newWallPost = $_POST["newWallPost"];
 
@@ -241,7 +233,7 @@ if (isset($_POST["newWallPost"])){
         <span class="sidebar">
             <?php
                 if ($selectedUser == $loggedInUser){
-                    echo nl2br("Viewing your profile\n\n");
+                    echo nl2br("Viewing your profile\n\nYour friends: ");
                 }
                 else{
                     echo nl2br("Viewing ".$selectedUser."'s profile\n\n");
@@ -265,9 +257,13 @@ if (isset($_POST["newWallPost"])){
                 
                 if ($selectedUserFriendsCount > 0){
                     for ($x = 0; $x < $selectedUserFriendsCount; $x++){
-
-                        //Display a user
-                        echo nl2br("<font color='#0080ff'><b><a href='profile.php?selectedUser=".$selectedUserFriendsArray[$x]."'>".$selectedUserFriendsArray[$x]."</a></b></font>, ");
+                        if ($selectedUserFriendsArray[$x] != $selectedUser){
+                            //Display a user
+                            echo nl2br("<font color='#0080ff'><b><a href='profile.php?selectedUser=".$selectedUserFriendsArray[$x]."'>".$selectedUserFriendsArray[$x]."</a></b></font>");
+                            if ($x < $selectedUserFriendsCount - 1){
+                                echo nl2br(", ");
+                            }
+                        }
                     }
                 }
 
