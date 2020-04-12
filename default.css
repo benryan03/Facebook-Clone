@@ -135,3 +135,28 @@ body {
 #search a {
     color: red;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+.status {
+    display: table;
+}
+
+.profileThumb {
+    display: table-cell;
+    padding-right: 10px;
+}
+
+.statusContent {
+    display: table-cell;
+    vertical-align: top;
+}
