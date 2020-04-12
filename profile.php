@@ -223,13 +223,55 @@ if (isset($_POST["newWallPost"])){
 
                 for ($x = 1; $x < $posts_count + 1; $x++){
                     $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
-                    
-                    //Display a post
-                    echo nl2br(
-                        "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font>" .
-                        "<font color='gray' size='2'> " . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
-                        $posts_array_row[1]."\n\n"
-                    );
+
+                    //If post is on author's own wall
+                    if ($posts_array_row[7] == $posts_array_row[8]){
+                        echo
+                            "<div class='status'>".
+                                "<span class='profileThumb'>".
+                                    "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
+
+                                    //If profile pic exists, display it. Else, display default profile pic.
+                                    if (file_exists("images\profile_pictures\\".$posts_array_row[2].".jpg")){echo "images\profile_pictures\\".$posts_array_row[2].".jpg";}         
+                                    else {echo "images\profile_pictures\default_profile_picture_64.jpg";}
+                                    
+                        echo
+                                    "'></a>".
+                                "</span>".
+                                
+                                "<span class='statusContent'>".
+                                    "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font><br> " .
+                                    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
+                                    $posts_array_row[1].
+                                "</span>".
+                            "</div><br><br>";
+                    }
+
+                    //If post is on a different user's wall
+                    else {
+                        echo
+                            "<div class='status'>".
+                                "<span class='profileThumb'>".
+                                    "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
+                                    
+                                    //If profile pic exists, display it. Else, display default profile pic.
+                                    if (file_exists("images\profile_pictures\\".$posts_array_row[2].".jpg")){echo "images\profile_pictures\\".$posts_array_row[2].".jpg";}         
+                                    else {echo "images\profile_pictures\default_profile_picture_64.jpg";}
+                                    
+                        echo
+                                    "'></a>".
+                                "</span>".
+
+                                "<span class='statusContent'>".
+                                    "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a>" . 
+                                    " > " . "<a href='profile.php?selectedUser=" . $posts_array_row[9] . "'>" . $posts_array_row[9] . "</a>" .
+                                    "</b></font> " .
+                                    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
+                                    $posts_array_row[1].
+                                "</span>".
+                            "</div><br><br>";              
+                    }
+
                 }
             }
             //If users are not friends, do not display any posts
