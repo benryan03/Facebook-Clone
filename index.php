@@ -117,7 +117,14 @@ if (isset($_POST["new_status"])){
                 echo
                     "<div class='status'>".
                         "<span class='profileThumb'>".
-                            "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='images\profile_pictures\default_profile_picture_64.jpg'></a>".
+                            "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
+
+                            //If profile pic exists, display it. Else, display default profile pic.
+                            if (file_exists("images\profile_pictures\\".$posts_array_row[2].".jpg")){echo "images\profile_pictures\\".$posts_array_row[2].".jpg";}         
+                            else {echo "images\profile_pictures\default_profile_picture_64.jpg";}
+                            
+                echo
+                            "'></a>".
                         "</span>".
                         
                         "<span class='statusContent'>".
@@ -133,7 +140,14 @@ if (isset($_POST["new_status"])){
                 echo
                     "<div class='status'>".
                         "<span class='profileThumb'>".
-                            "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='images\profile_pictures\default_profile_picture_64.jpg'></a>".
+                            "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
+                            
+                            //If profile pic exists, display it. Else, display default profile pic.
+                            if (file_exists("images\profile_pictures\\".$posts_array_row[2].".jpg")){echo "images\profile_pictures\\".$posts_array_row[2].".jpg";}         
+                            else {echo "images\profile_pictures\default_profile_picture_64.jpg";}
+                            
+                echo
+                            "'></a>".
                         "</span>".
 
                         "<span class='statusContent'>".
