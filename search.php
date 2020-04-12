@@ -75,8 +75,24 @@ $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
                     for ($x = 1; $x < $userResultsCount + 1; $x++){
                         $userResultsArrayRow = sqlsrv_fetch_array($userResultsArray, SQLSRV_FETCH_NUMERIC); //Select next row in $query
 
-                        //Display a user
-                        echo nl2br("<font color='#0080ff'><b><a href='profile.php?selectedUser=".$userResultsArrayRow[0]."'>".$userResultsArrayRow[0]."</a></b></font>\n\n");
+                        //Display profile pic for user result
+                        echo
+                        "<div class='status'>".
+                            "<span class='profileThumb'>".
+                                "<a href='profile.php?selectedUser=" . $userResultsArrayRow[0] . "'><img src='";
+                        
+                                //If profile pic exists, display it. Else, display default profile pic.
+                                if (file_exists("images\profile_pictures\\".$userResultsArrayRow[0].".jpg")){echo "images\profile_pictures\\".$userResultsArrayRow[0].".jpg";}         
+                                else {echo "images\profile_pictures\default_profile_picture_64.jpg";}
+                                
+                                echo "'></a>".
+                            "</span>".
+                        
+                        //Display user result
+                            "<span class='statusContent'>".
+                                "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $userResultsArrayRow[0] . "'>" . $userResultsArrayRow[0]. "</a></b></font><br> " .
+                            "</span>".
+                        "</div><br><br>";
                     }
                 }
                 else {
