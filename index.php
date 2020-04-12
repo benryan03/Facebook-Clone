@@ -114,7 +114,7 @@ if (isset($_POST["new_status"])){
             
             //If post is on author's own wall
             if ($posts_array_row[7] == $posts_array_row[8]){
-                echo nl2br(
+                echo
                     "<div class='status'>".
                         "<span class='profileThumb'>".
                             "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='images\profile_pictures\default_profile_picture_64.jpg'></a>".
@@ -122,30 +122,28 @@ if (isset($_POST["new_status"])){
                         
                         "<span class='statusContent'>".
                             "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font><br> " .
-                            "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
+                            "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
                             $posts_array_row[1].
                         "</span>".
-                    "</div>\n\n"
-                );
+                    "</div><br><br>";
             }
+
             //If post is on a different user's wall
             else {
-                echo nl2br(
+                echo
                     "<div class='status'>".
-                    "<span class='profileThumb'>".
-                        "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='images\profile_pictures\default_profile_picture_64.jpg'></a>".
-                    "</span>".
+                        "<span class='profileThumb'>".
+                            "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='images\profile_pictures\default_profile_picture_64.jpg'></a>".
+                        "</span>".
 
-                    "<span class='statusContent'>".
-                        "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a>" . 
-                        " > " . "<a href='profile.php?selectedUser=" . $posts_array_row[9] . "'>" . $posts_array_row[9] . "</a>" .
-                        "</b></font> " .
-                        "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font>\n" .
-                        $posts_array_row[1].
-                    "</span>".
-                "</div>\n\n"
-                    
-                );                
+                        "<span class='statusContent'>".
+                            "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a>" . 
+                            " > " . "<a href='profile.php?selectedUser=" . $posts_array_row[9] . "'>" . $posts_array_row[9] . "</a>" .
+                            "</b></font> " .
+                            "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
+                            $posts_array_row[1].
+                        "</span>".
+                    "</div><br><br>";              
             }
         }
 
