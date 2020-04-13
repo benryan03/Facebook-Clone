@@ -37,8 +37,10 @@ $getPendingRequestsQuery = "SELECT * FROM friends WHERE friendid = '$currentUser
 $getPendingRequests = sqlsrv_query($conn, $getPendingRequestsQuery, array(), array( "Scrollable" => 'static' ));
 $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
 
-
+//
 //If new status has been posted
+//
+
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
 
@@ -52,6 +54,25 @@ if (isset($_POST["new_status"])){
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
+}
+
+//
+//If user liked a post
+//
+
+if (isset($_GET["likePost"])){
+
+    //Get previous number of likes
+    $likedPostID = $_GET["likePost"];
+    $getLikesCountQuery = "SELECT likes FROM posts WHERE post_id = '$likedPostID'";
+    $getLikesCount = sqlsrv_query($conn, $getLikesCountQuery, array(), array( "Scrollable" => 'static' ));
+    $likesCount = sqlsrv_fetch_array($getLikesCount);
+    $likesCount = $likesCount[0];
+
+    //Add like
+    $newLikesCount = $likesCount + 1;
+    $likePostQuery = "UPDATE posts SET likes = '$newLikesCount' WHERE post_id = '$likedPostID'";
+    $likePost = sqlsrv_query($conn, $likePostQuery);
 }
 
 ?>
@@ -111,56 +132,39 @@ if (isset($_POST["new_status"])){
             $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
             
             //Display a post
-            
-            //If post is on author's own wall
-            if ($posts_array_row[7] == $posts_array_row[8]){
                 echo
-                    "<div class='status'>".
-                        "<span class='profileThumb'>".
-                            "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
+                "<div class='status'>".
+                    "<span class='profileThumb'>".
+                        "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
 
-                            //If profile pic exists, display it. Else, display default profile pic.
-                            if (file_exists("images\\".$posts_array_row[2]."_32.jpg")){echo "images\\".$posts_array_row[2]."_32.jpg";}         
-                            else {echo "images\default_profile_picture_32.jpg";}
-                            
-                echo
-                            "'></a>".
-                        "</span>".
+                        //If profile pic exists, display it. Else, display default profile pic.
+                        if (file_exists("images\\".$posts_array_row[2]."_32.jpg")){echo "images\\".$posts_array_row[2]."_32.jpg";}         
+                        else {echo "images\default_profile_picture_32.jpg";}
                         
-                        "<span class='statusContent'>".
-                            "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font><br> " .
-                            "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
-                            $posts_array_row[1] . "<br>" . 
-                            "<font size='2'><a href='?'>Like</a>&nbsp;<a href='?'>Comment</a></font>" .
-                        "</span>".
-                    "</div><br><br>";
-            }
+                echo    "'></a>".
+                    "</span>".
+                    
+                    "<span class='statusContent'>".
+                        //Username of post author
+                        "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a>" . "</b></font><br> ";
 
-            //If post is on a different user's wall
-            else {
-                echo
-                    "<div class='status'>".
-                        "<span class='profileThumb'>".
-                            "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
-                            
-                            //If profile pic exists, display it. Else, display default profile pic.
-                            if (file_exists("images\\".$posts_array_row[2]."_32.jpg")){echo "images\\".$posts_array_row[2]."_32.jpg";}         
-                            else {echo "images\default_profile_picture_32.jpg";}
-                            
-                echo
-                            "'></a>".
-                        "</span>".
+                        //If post is not on author's wall, display username of that user
+                        if ($posts_array_row[7] != $posts_array_row[8]){echo "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a>" . " > " . "<a href='profile.php?selectedUser=" . $posts_array_row[9] . "'>" . $posts_array_row[9] . "</a>" . "</b></font> ";}
 
-                        "<span class='statusContent'>".
-                            "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a>" . 
-                            " > " . "<a href='profile.php?selectedUser=" . $posts_array_row[9] . "'>" . $posts_array_row[9] . "</a>" .
-                            "</b></font> " .
-                            "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
-                            $posts_array_row[1] . "<br>" . 
-                            "<font size='2'><a href='?'>Like</a>&nbsp;<a href='?'>Comment</a></font>" .
-                        "</span>".
-                    "</div><br><br>";              
-            }
+                        //Date posted
+                echo    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
+                        //Post content
+                        $posts_array_row[1] . "<br><font size='2'>";
+
+                        //Number of likes
+                        if ($posts_array_row[10] == 1) {echo "1 like&nbsp;";}
+                        else if ($posts_array_row[10] > 1) {echo $posts_array_row[10] . "&nbsp;likes&nbsp;";}
+                        
+                        //Like and comment buttons
+                echo    "<a href='?likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp;<a href='?'>Comment</a></font>" .
+                    "</span>".
+                "</div><br><br>";
+
         }
 
         ?>
