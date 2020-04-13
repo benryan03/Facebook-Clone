@@ -189,11 +189,11 @@ if (isset($_POST["newWallPost"])){
             <!--Profile pic-->
             <?php
             //If profile pic exists, display it. Else, display default profile pic.
-            if (file_exists("images\profile_pictures\\" . $selectedUser . "_128.jpg")){
-                echo"<a href='view_image.php?selectedImage=" . $selectedUser . "_128.jpg'><img src='images\profile_pictures\\" .$selectedUser. "_128.jpg'></a><br>";                
+            if (file_exists("images\\" . $selectedUser . "_128.jpg")){
+                echo"<a href='view_image.php?selectedImage=" . $selectedUser . "_128.jpg'><img src='images\\" .$selectedUser. "_128.jpg'></a><br>";                
             }
             else {
-                echo "<img src='images\profile_pictures\default_profile_picture_128.jpg'></a><br>";
+                echo "<img src='images\default_profile_picture_128.jpg'></a><br>";
             }
 
             if ($selectedUser == $loggedInUser){
@@ -249,8 +249,8 @@ if (isset($_POST["newWallPost"])){
                                     "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
 
                                     //If profile pic exists, display it. Else, display default profile pic.
-                                    if (file_exists("images\profile_pictures\\".$posts_array_row[2].".jpg")){echo "images\profile_pictures\\".$posts_array_row[2].".jpg";}         
-                                    else {echo "images\profile_pictures\default_profile_picture_64.jpg";}
+                                    if (file_exists("images\\".$posts_array_row[2].".jpg")){echo "images\\".$posts_array_row[2].".jpg";}         
+                                    else {echo "images\default_profile_picture_64.jpg";}
                                     
                         echo
                                     "'></a>".
@@ -272,8 +272,8 @@ if (isset($_POST["newWallPost"])){
                                     "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
                                     
                                     //If profile pic exists, display it. Else, display default profile pic.
-                                    if (file_exists("images\profile_pictures\\".$posts_array_row[2].".jpg")){echo "images\profile_pictures\\".$posts_array_row[2].".jpg";}         
-                                    else {echo "images\profile_pictures\default_profile_picture_64.jpg";}
+                                    if (file_exists("images\\".$posts_array_row[2].".jpg")){echo "images\\".$posts_array_row[2].".jpg";}         
+                                    else {echo "images\default_profile_picture_64.jpg";}
                                     
                         echo
                                     "'></a>".
