@@ -130,7 +130,8 @@ if (isset($_POST["new_status"])){
                         "<span class='statusContent'>".
                             "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font><br> " .
                             "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
-                            $posts_array_row[1].
+                            $posts_array_row[1] . "<br>" . 
+                            "<font size='2'><a href='?'>Like</a>&nbsp;<a href='?'>Comment</a></font>" .
                         "</span>".
                     "</div><br><br>";
             }
@@ -143,7 +144,7 @@ if (isset($_POST["new_status"])){
                             "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
                             
                             //If profile pic exists, display it. Else, display default profile pic.
-                            if (file_exists("images\\".$posts_array_row[2].".jpg")){echo "images\\".$posts_array_row[2].".jpg";}         
+                            if (file_exists("images\\".$posts_array_row[2]."_32.jpg")){echo "images\\".$posts_array_row[2]."_32.jpg";}         
                             else {echo "images\default_profile_picture_32.jpg";}
                             
                 echo
@@ -155,7 +156,8 @@ if (isset($_POST["new_status"])){
                             " > " . "<a href='profile.php?selectedUser=" . $posts_array_row[9] . "'>" . $posts_array_row[9] . "</a>" .
                             "</b></font> " .
                             "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
-                            $posts_array_row[1].
+                            $posts_array_row[1] . "<br>" . 
+                            "<font size='2'><a href='?'>Like</a>&nbsp;<a href='?'>Comment</a></font>" .
                         "</span>".
                     "</div><br><br>";              
             }

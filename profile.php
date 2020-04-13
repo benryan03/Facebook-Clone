@@ -259,7 +259,8 @@ if (isset($_POST["newWallPost"])){
                                 "<span class='statusContent'>".
                                     "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a></b></font><br> " .
                                     "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
-                                    $posts_array_row[1].
+                                    $posts_array_row[1] . "<br>" . 
+                                    "<font size='2'><a href='?'>Like</a>&nbsp;<a href='?'>Comment</a></font>" .
                                 "</span>".
                             "</div><br><br>";
                     }
@@ -284,7 +285,8 @@ if (isset($_POST["newWallPost"])){
                                     " > " . "<a href='profile.php?selectedUser=" . $posts_array_row[9] . "'>" . $posts_array_row[9] . "</a>" .
                                     "</b></font> " .
                                     "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
-                                    $posts_array_row[1].
+                                    $posts_array_row[1] . "<br>" . 
+                                    "<font size='2'><a href='?'>Like</a>&nbsp;<a href='?'>Comment</a></font>" .
                                 "</span>".
                             "</div><br><br>";              
                     }
