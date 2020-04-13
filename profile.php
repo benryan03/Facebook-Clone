@@ -185,7 +185,22 @@ if (isset($_POST["newWallPost"])){
     
     <div class="main">
         <span class="wall" id="wall">
+            
+            <!--Profile pic-->
+            <?php echo
+                "<a href='profile.php?selectedUser=" . $selectedUser . "'><img src='";
+                    //If profile pic exists, display it. Else, display default profile pic.
+                    if (file_exists("images\profile_pictures\\" . $selectedUser . "_128.jpg")){echo "images\profile_pictures\\" .$selectedUser. "_128.jpg";}    
+                    else {echo "images\profile_pictures\default_profile_picture_128.jpg";}
+                    echo "'></a><br>";
 
+                    if ($selectedUser == $loggedInUser){
+                        echo "<a href='?'>Change profile picture</a><br><br>";
+                    }
+                    else echo "<br>"
+            ?>
+
+            <!-- Wall -->
             <?php 
             if ($selectedUser == $loggedInUser){
                 echo "Your Wall";
