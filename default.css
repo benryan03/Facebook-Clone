@@ -134,16 +134,19 @@ body {
     font-size: 15px;
 }
 
-.feed a, .wall a {
+.feed a, .wall a, #searchResults a {
     color: #0080ff;
     text-decoration: none;
 }
 
-
-
-#search a {
-    color: red;
+.feed a:hover, .wall a:hover, #searchResults a:hover {
+    color: #0080ff;
+    text-decoration: underline;
 }
+
+
+
+
 
 
 
