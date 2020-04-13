@@ -60,6 +60,15 @@ body {
 
 
 
+#search {
+    display: table-cell;
+    padding-top: 20;
+    padding-bottom: 20;
+    padding-left: 40;
+    padding-right: 40;
+}
+
+
 
 
 
@@ -159,4 +168,18 @@ body {
 .statusContent {
     display: table-cell;
     vertical-align: top;
+}
+
+
+
+
+
+
+
+
+#image {
+    display: table-cell;
+    padding: 40px;    
+    background-color: white;
+    width: 800px;
 }
