@@ -64,7 +64,7 @@ $selectedImage = $_GET["selectedImage"];
     <div class="contents">
         <span id="image">
             <?php
-               echo $selectedImage;
+               echo "<img src='images/" . $selectedImage . "'>";
             ?>
         </div>
     </div>
