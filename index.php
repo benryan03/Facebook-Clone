@@ -91,7 +91,7 @@ if (isset($_POST["new_status"])){
 
     <!-- Content feed-->
     <div class="feed">
-        Your feed<br>
+        Your News Feed<br>
 
         <!--Post a status-->
         <form action="?" method="post">
