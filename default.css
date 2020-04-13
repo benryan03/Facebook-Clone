@@ -134,12 +134,12 @@ body {
     font-size: 15px;
 }
 
-.feed a, .wall a, #searchResults a {
+.feed a, .wall a, #searchResults a, .sidebar a, #options a {
     color: #0080ff;
     text-decoration: none;
 }
 
-.feed a:hover, .wall a:hover, #searchResults a:hover {
+.feed a:hover, .wall a:hover, #searchResults a:hover, .sidebar a:hover, #options a:hover {
     color: #0080ff;
     text-decoration: underline;
 }
