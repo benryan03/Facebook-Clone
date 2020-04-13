@@ -60,6 +60,7 @@ if (isset($_POST["new_status"])){
 //If user liked a post
 //
 
+//Still need to add permission check
 if (isset($_GET["likePost"])){
 
     //Get previous number of likes

@@ -135,6 +135,7 @@ if (isset($_POST["new_status"])){
 //If $loggedInUser posts a status to a friend's Wall
 //
 
+//Still need to add permission check
 if (isset($_POST["newWallPost"])){
     $newWallPost = $_POST["newWallPost"];
 
