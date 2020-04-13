@@ -82,7 +82,7 @@ $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
                                 "<a href='profile.php?selectedUser=" . $userResultsArrayRow[0] . "'><img src='";
                         
                                 //If profile pic exists, display it. Else, display default profile pic.
-                                if (file_exists("images\\".$userResultsArrayRow[0].".jpg")){echo "images\\".$userResultsArrayRow[0].".jpg";}         
+                                if (file_exists("images\\".$userResultsArrayRow[0]."_32.jpg")){echo "images\\".$userResultsArrayRow[0]."_32.jpg";}         
                                 else {echo "images\default_profile_picture_32.jpg";}
                                 
                                 echo "'></a>".
