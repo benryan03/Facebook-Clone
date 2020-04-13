@@ -83,7 +83,7 @@ $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
                         
                                 //If profile pic exists, display it. Else, display default profile pic.
                                 if (file_exists("images\\".$userResultsArrayRow[0].".jpg")){echo "images\\".$userResultsArrayRow[0].".jpg";}         
-                                else {echo "images\default_profile_picture_64.jpg";}
+                                else {echo "images\default_profile_picture_32.jpg";}
                                 
                                 echo "'></a>".
                             "</span>".

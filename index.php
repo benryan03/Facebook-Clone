@@ -121,7 +121,7 @@ if (isset($_POST["new_status"])){
 
                             //If profile pic exists, display it. Else, display default profile pic.
                             if (file_exists("images\\".$posts_array_row[2].".jpg")){echo "images\\".$posts_array_row[2].".jpg";}         
-                            else {echo "images\default_profile_picture_64.jpg";}
+                            else {echo "images\default_profile_picture_32.jpg";}
                             
                 echo
                             "'></a>".
@@ -144,7 +144,7 @@ if (isset($_POST["new_status"])){
                             
                             //If profile pic exists, display it. Else, display default profile pic.
                             if (file_exists("images\\".$posts_array_row[2].".jpg")){echo "images\\".$posts_array_row[2].".jpg";}         
-                            else {echo "images\default_profile_picture_64.jpg";}
+                            else {echo "images\default_profile_picture_32.jpg";}
                             
                 echo
                             "'></a>".
