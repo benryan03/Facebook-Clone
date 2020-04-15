@@ -164,16 +164,15 @@ if (isset($_GET["unLikePost"])){
                         $getLikes = sqlsrv_query($conn, $getLikesQuery, array(), array( "Scrollable" => 'static' ));
                         $likesCount = sqlsrv_num_rows($getLikes);
 
-                        if ($likesCount == 1) {echo "1 like&nbsp;";}
-                        else if ($likesCount > 1) {echo $likesCount . "&nbsp;likes&nbsp;";}
-
                         //Convert users who liked current post to array
                         $likesArray = array();
                         for ($y = 1; $y < $likesCount + 1; $y++){
                             $likesRow = sqlsrv_fetch_array($getLikes, SQLSRV_FETCH_NUMERIC); //Select next row
                             array_push($likesArray, $likesRow[1]);}
 
-                        //print_r($likesArray);
+                        if ($likesCount == 1) {echo "<div class='tooltip'>1 like<span class='tooltiptext'>" . implode(" ,", $likesArray) . "</span></div>&nbsp;";}
+                        else if ($likesCount > 1) {echo "<div class='tooltip'>" . $likesCount . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray) . "</span></div>&nbsp;";}
+
                         //Like/unlike button
                         if (!in_array($loggedInUser, $likesArray)){echo "<a href='?likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp";}
                         else {echo "<a href='?unLikePost=" . $posts_array_row[0] . "'>Unlike</a>&nbsp";}
