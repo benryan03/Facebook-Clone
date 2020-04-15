@@ -62,17 +62,19 @@ if (isset($_POST["new_status"])){
 
 //Still need to add permission check
 if (isset($_GET["likePost"])){
-
-    //Get previous number of likes
     $likedPostID = $_GET["likePost"];
-    $getLikesCountQuery = "SELECT likes FROM posts WHERE post_id = '$likedPostID'";
-    $getLikesCount = sqlsrv_query($conn, $getLikesCountQuery, array(), array( "Scrollable" => 'static' ));
-    $likesCount = sqlsrv_fetch_array($getLikesCount);
-    $likesCount = $likesCount[0];
+    $likePostQuery = "INSERT INTO likes VALUES ('$likedPostID', '$loggedInUser')";
+    $likePost = sqlsrv_query($conn, $likePostQuery);
+}
 
-    //Add like
-    $newLikesCount = $likesCount + 1;
-    $likePostQuery = "UPDATE posts SET likes = '$newLikesCount' WHERE post_id = '$likedPostID'";
+//
+//If user unliked a post
+//
+
+//Still need to add permission check
+if (isset($_GET["unLikePost"])){
+    $unLikedPostID = $_GET["unLikePost"];
+    $likePostQuery = "DELETE FROM likes WHERE post_id = '$unLikedPostID' AND liked_by = '$loggedInUser'";
     $likePost = sqlsrv_query($conn, $likePostQuery);
 }
 
@@ -157,15 +159,29 @@ if (isset($_GET["likePost"])){
                         //Post content
                         $posts_array_row[1] . "<br><font size='2'>";
 
-                        //Number of likes
-                        if ($posts_array_row[10] == 1) {echo "1 like&nbsp;";}
-                        else if ($posts_array_row[10] > 1) {echo $posts_array_row[10] . "&nbsp;likes&nbsp;";}
-                        
-                        //Like and comment buttons
-                echo    "<a href='?likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp;<a href='?'>Comment</a></font>" .
+                        //Get number of likes
+                        $getLikesQuery = "SELECT * FROM likes WHERE post_id = '$posts_array_row[0]' ";
+                        $getLikes = sqlsrv_query($conn, $getLikesQuery, array(), array( "Scrollable" => 'static' ));
+                        $likesCount = sqlsrv_num_rows($getLikes);
+
+                        if ($likesCount == 1) {echo "1 like&nbsp;";}
+                        else if ($likesCount > 1) {echo $likesCount . "&nbsp;likes&nbsp;";}
+
+                        //Convert users who liked current post to array
+                        $likesArray = array();
+                        for ($y = 1; $y < $likesCount + 1; $y++){
+                            $likesRow = sqlsrv_fetch_array($getLikes, SQLSRV_FETCH_NUMERIC); //Select next row
+                            array_push($likesArray, $likesRow[1]);}
+
+                        //print_r($likesArray);
+                        //Like/unlike button
+                        if (!in_array($loggedInUser, $likesArray)){echo "<a href='?likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp";}
+                        else {echo "<a href='?unLikePost=" . $posts_array_row[0] . "'>Unlike</a>&nbsp";}
+
+                        //Comment button
+                echo    "<a href='?'>Comment</a></font>" .
                     "</span>".
                 "</div><br><br>";
-
         }
 
         ?>
