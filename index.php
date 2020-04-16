@@ -225,11 +225,8 @@ if (isset($_GET["unLikePost"])){
                 echo    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>";
                         
                         //Post content
-                        if ($posts_array_row[4] != ""){
-                            echo "<img src='" . $posts_array_row[4] . "'><br>";}
-                        else {
-                        
-                echo    $posts_array_row[1] . "<br><font size='2'>";}
+                        if ($posts_array_row[4] != ""){echo "<img src='" . $posts_array_row[4] . "'><br>";}
+                        else {echo $posts_array_row[1] . "<br><font size='2'>";}
 
                         //Get number of likes
                         $getLikesQuery = "SELECT * FROM likes WHERE post_id = '$posts_array_row[0]' ";
