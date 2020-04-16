@@ -62,7 +62,17 @@ if (isset($_POST["new_status"])){
 $postImageError = "";
 if (isset($_POST["postImage"])){
 
-    $target_file = "images/" . basename($_FILES["file"]["name"]);
+    //To calculate new post ID, count number of rows in database and add 1
+    $countExistingPostsQuery = "SELECT * FROM posts";
+    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
+    $posts_count = sqlsrv_num_rows( $countExistingPosts );
+    $newPostID = $posts_count + 1;
+
+    //Set filename of image to new post ID
+    $path = $_FILES['file']['name'];
+    $ext = pathinfo($path, PATHINFO_EXTENSION);
+    $target_file = "images/" . $newPostID . "." . $ext;
+
     $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
     
@@ -77,10 +87,6 @@ if (isset($_POST["postImage"])){
             $uploadOk = 0;
         }
     }
-    // Check if file already exists
-    if (file_exists($target_file)) {
-        echo "Sorry, file already exists.";
-        $uploadOk = 0;}
     // Check file size
     if ($_FILES["file"]["size"] > 500000) {
         $postImageError = "Sorry, your file is too large.";
@@ -89,15 +95,17 @@ if (isset($_POST["postImage"])){
     if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
         $postImageError = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
         $uploadOk = 0;}
-    // Check if $uploadOk is set to 0 by an error
-    if ($uploadOk == 0) {
-        $postImageError = "Sorry, your file was not uploaded.";
     // if everything is ok, try to upload file
-    } 
-    else {
+    if ($uploadOk == 1) {   
         if (!move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
             $postImageError = "Sorry, there was an error uploading your file.";}
-  }
+    }
+
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser') ";
+    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
+    if (!$newPostSubmit){
+        print_r(sqlsrv_errors());}
+
 }
 
 //
@@ -214,9 +222,14 @@ if (isset($_GET["unLikePost"])){
                         else {echo "<br>";} 
                         
                         //Date posted
-                echo    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>" .
+                echo    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>";
+                        
                         //Post content
-                        $posts_array_row[1] . "<br><font size='2'>";
+                        if ($posts_array_row[4] != ""){
+                            echo "<img src='" . $posts_array_row[4] . "'><br>";}
+                        else {
+                        
+                echo    $posts_array_row[1] . "<br><font size='2'>";}
 
                         //Get number of likes
                         $getLikesQuery = "SELECT * FROM likes WHERE post_id = '$posts_array_row[0]' ";
