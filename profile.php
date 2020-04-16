@@ -306,8 +306,8 @@ if (isset($_GET["unLikePost"])){
             
         
                                 //Like/unlike button
-                                if (!in_array($loggedInUser, $likesArray)){echo "<a href='?selectedUser=" . $posts_array_row[2] . "&likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp";}
-                                else {echo "<a href='?selectedUser=" . $posts_array_row[2] . "&unLikePost=" . $posts_array_row[0] . "'>Unlike</a>&nbsp";}
+                                if (!in_array($loggedInUser, $likesArray)){echo "<a href='?selectedUser=" . $selectedUser . "&likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp";}
+                                else {echo "<a href='?selectedUser=" . $selectedUser . "&unLikePost=" . $posts_array_row[0] . "'>Unlike</a>&nbsp";}
         
                                 //Comment button
                         echo    "<a href='?'>Comment</a></font>" .
