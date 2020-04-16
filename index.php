@@ -57,6 +57,50 @@ if (isset($_POST["new_status"])){
 }
 
 //
+//If user uploaded an image
+//
+$postImageError = "";
+if (isset($_POST["postImage"])){
+
+    $target_file = "images/" . basename($_FILES["file"]["name"]);
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+    
+    // Check if image file is a actual image or fake image
+    if(isset($_POST["submit"])) {
+        $check = getimagesize($_FILES["file"]["tmp_name"]);
+        if($check !== false) {
+            echo "File is an image - " . $check["mime"] . ".";
+            $uploadOk = 1;
+        } else {
+            $postImageError = "File is not an image.";
+            $uploadOk = 0;
+        }
+    }
+    // Check if file already exists
+    if (file_exists($target_file)) {
+        echo "Sorry, file already exists.";
+        $uploadOk = 0;}
+    // Check file size
+    if ($_FILES["file"]["size"] > 500000) {
+        $postImageError = "Sorry, your file is too large.";
+        $uploadOk = 0;}
+    // Allow certain file formats
+    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
+        $postImageError = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+        $uploadOk = 0;}
+    // Check if $uploadOk is set to 0 by an error
+    if ($uploadOk == 0) {
+        $postImageError = "Sorry, your file was not uploaded.";
+    // if everything is ok, try to upload file
+    } 
+    else {
+        if (!move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
+            $postImageError = "Sorry, there was an error uploading your file.";}
+  }
+}
+
+//
 //If user liked a post
 //
 
@@ -129,15 +173,16 @@ if (isset($_GET["unLikePost"])){
             if (!isset($_GET["postImage"])){
                 echo "<a href='?postImage'>Post an image</a><br><br>";}
             else {
-                echo "<form action='?imagePosted' method='post' enctype='multipart/form-data'>".
+                echo "<form action='?' method='post' enctype='multipart/form-data'>".
                     "Select image to post:<br>".
                     "<input type='file' name='file' id='file'><br>".
-                    "<input type='submit' value='Post' name='submit'>".
+                    "<input type='submit' value='Post' name='postImage'>".
                     "</form>";
             }
         ?>
-
-        <?php   
+        <div class="error"><?php echo $postImageError; ?></div>
+            
+        <?php
         //Count how many comments are in the the thread
         $currentUserFriendsString = "'".implode("', '", $currentUserFriendsArray)."'";
         $query = "SELECT * FROM posts WHERE post_author_id IN ($currentUserFriendsString) OR post_author = '$loggedInUser' ORDER BY date_submitted DESC";
