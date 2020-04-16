@@ -121,8 +121,21 @@ if (isset($_GET["unLikePost"])){
         <form action="?" method="post">
         <textarea name="new_status" rows="1" cols="40" placeholder="Post a status"></textarea>
         <input type="submit" value="Submit" name="submit_status"><br>
-        <div class="error" id="status_error"><br></div>
+        <!--<div class="error" id="status_error"><br></div>-->
         </form>
+
+        <!-- Post an image-->
+        <?php
+            if (!isset($_GET["postImage"])){
+                echo "<a href='?postImage'>Post an image</a><br><br>";}
+            else {
+                echo "<form action='?imagePosted' method='post' enctype='multipart/form-data'>".
+                    "Select image to post:<br>".
+                    "<input type='file' name='file' id='file'><br>".
+                    "<input type='submit' value='Post' name='submit'>".
+                    "</form>";
+            }
+        ?>
 
         <?php   
         //Count how many comments are in the the thread

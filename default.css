@@ -188,7 +188,13 @@ body {
 }
 
 
-
+#postImage {
+    text-align: left;
+    display: table-cell;
+    padding: 40px;    
+    background-color: white;
+    width: 800px;
+}
 
 
 
