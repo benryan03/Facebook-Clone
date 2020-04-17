@@ -26,6 +26,14 @@ $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
 
 $selectedImage = $_GET["selectedImage"];
 
+$postIDFromFilename = pathinfo($selectedImage, PATHINFO_FILENAME);
+//$test = $postIDFromFilename;
+
+$getPostQuery = "SELECT * FROM posts WHERE post_id = '$postIDFromFilename' ";
+$getPost = sqlsrv_query($conn, $getPostQuery, array());
+$post = sqlsrv_fetch_array($getPost);
+//$postAuthor = $post[2];
+
 
 ?>
 
@@ -64,7 +72,12 @@ $selectedImage = $_GET["selectedImage"];
     <div class="contents">
         <span id="image">
             <?php
-               echo "<img src='images/" . $selectedImage . "'>";
+                //Display image
+                echo "<img src='images/" . $selectedImage . "'><br><br>";
+                //Display username of poster
+                echo "<font color='#0080ff'><b></a>" . "<a href='profile.php?selectedUser=" . $post[2] . "'>" . $post[2] . "</a>" . "</b></font> ";
+                //Display datetime posted
+                echo "<font color='gray' size='2'>" . date_format($post[3], "m/d/Y h:ia") . "</font><br>";
             ?>
         </div>
     </div>
