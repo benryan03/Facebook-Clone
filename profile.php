@@ -118,6 +118,48 @@ function calculateNewPostID(){
     return $newPostID;
 }
 
+function setFilename(){
+    global $newPostID;
+    //Set filename of image to new post ID
+    $path = $_FILES['file']['name'];
+    $ext = pathinfo($path, PATHINFO_EXTENSION);
+    $target_file = "images/" . $newPostID . "." . $ext;
+    return $target_file;
+}
+
+function verifyImage(){
+    global $conn;
+    global $newPostID;
+    global $target_file;
+    $uploadError = "";
+    // Check if image file is a actual image or fake image
+    if(isset($_POST["submit"])) {
+        $check = getimagesize($_FILES["file"]["tmp_name"]);
+        if($check !== false) {
+            echo "File is an image - " . $check["mime"] . ".";
+        } 
+        else {
+            $uploadError = "File is not an image.";
+            return $uploadError;
+        }
+    }
+    // Check file size
+    if ($_FILES["file"]["size"] > 500000) {
+        $uploadError = "Sorry, your file is too large.";
+        return $uploadError;}
+    // Allow certain file formats
+    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
+        $uploadError = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+        return $uploadError;}
+    // if everything is ok, try to upload file
+    if ($uploadError == "") {   
+        if (!move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
+            $uploadError = "Sorry, there was an error uploading your file.";
+            return $uploadError;}
+    }
+}
+
 ///////////////////////////////////////////////////
 //If $loggedInUser posts a status to their own Wall
 if (isset($_POST["new_status"])){
@@ -135,107 +177,6 @@ if (isset($_POST["newWallPost"])){
     $newWallPost = $_POST["newWallPost"];
     $newPostID = calculateNewPostID();
     $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '$newWallPost', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser')");
-    if (!$newPostSubmit){
-        print_r(sqlsrv_errors());}
-}
-
-/////////////////////////////////////////////
-//If user uploaded an image to their own wall
-$postImageError = "";
-if (isset($_POST["postImage"])){
-
-    //To calculate new post ID, count number of rows in database and add 1
-    $countExistingPostsQuery = "SELECT * FROM posts";
-    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
-    $posts_count = sqlsrv_num_rows( $countExistingPosts );
-    $newPostID = $posts_count + 1;
-
-    //Set filename of image to new post ID
-    $path = $_FILES['file']['name'];
-    $ext = pathinfo($path, PATHINFO_EXTENSION);
-    $target_file = "images/" . $newPostID . "." . $ext;
-
-    $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-    
-    // Check if image file is a actual image or fake image
-    if(isset($_POST["submit"])) {
-        $check = getimagesize($_FILES["file"]["tmp_name"]);
-        if($check !== false) {
-            echo "File is an image - " . $check["mime"] . ".";
-            $uploadOk = 1;
-        } else {
-            $postImageError = "File is not an image.";
-            $uploadOk = 0;
-        }
-    }
-    // Check file size
-    if ($_FILES["file"]["size"] > 500000) {
-        $postImageError = "Sorry, your file is too large.";
-        $uploadOk = 0;}
-    // Allow certain file formats
-    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
-        $postImageError = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-        $uploadOk = 0;}
-    // if everything is ok, try to upload file
-    if ($uploadOk == 1) {   
-        if (!move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
-            $postImageError = "Sorry, there was an error uploading your file.";}
-    }
-
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser') ";
-    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
-    if (!$newPostSubmit){
-        print_r(sqlsrv_errors());}
-
-}
-
-//////////////////////////////////////////////
-//If user uploaded an image to a friend's Wall
-$postImageError = "";
-if (isset($_POST["postImageFriend"])){
-
-    //To calculate new post ID, count number of rows in database and add 1
-    $countExistingPostsQuery = "SELECT * FROM posts";
-    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
-    $posts_count = sqlsrv_num_rows( $countExistingPosts );
-    $newPostID = $posts_count + 1;
-
-    //Set filename of image to new post ID
-    $path = $_FILES['file']['name'];
-    $ext = pathinfo($path, PATHINFO_EXTENSION);
-    $target_file = "images/" . $newPostID . "." . $ext;
-
-    $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-    
-    // Check if image file is a actual image or fake image
-    if(isset($_POST["submit"])) {
-        $check = getimagesize($_FILES["file"]["tmp_name"]);
-        if($check !== false) {
-            echo "File is an image - " . $check["mime"] . ".";
-            $uploadOk = 1;
-        } else {
-            $postImageError = "File is not an image.";
-            $uploadOk = 0;
-        }
-    }
-    // Check file size
-    if ($_FILES["file"]["size"] > 500000) {
-        $postImageError = "Sorry, your file is too large.";
-        $uploadOk = 0;}
-    // Allow certain file formats
-    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
-        $postImageError = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-        $uploadOk = 0;}
-    // if everything is ok, try to upload file
-    if ($uploadOk == 1) {   
-        if (!move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
-            $postImageError = "Sorry, there was an error uploading your file.";}
-    }
-
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser') ";
-    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
 }
@@ -258,60 +199,46 @@ if (isset($_GET["unLikePost"])){
     $likePost = sqlsrv_query($conn, $likePostQuery);
 }
 
+/////////////////////////////////////////////
+//If user uploaded an image to their own wall
+$uploadError = "";
+if (isset($_POST["postImage"])){
+    $newPostID = calculateNewPostID();
+    $target_file = setFileName();
+    $uploadError = verifyImage();
+    if ($uploadError == "")
+        $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser') ");
+        if (!$newPostSubmit){
+            print_r(sqlsrv_errors());
+    }
+}
+
+//////////////////////////////////////////////
+//If user uploaded an image to a friend's Wall
+if (isset($_POST["postImageFriend"])){
+    $newPostID = calculateNewPostID();
+    $target_file = setFileName();
+    $uploadError = verifyImage();
+    if ($uploadError == "")
+        $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser') ");
+        if (!$newPostSubmit){
+            print_r(sqlsrv_errors());
+    }
+}
+
 ///////////////////////////////////////
 //If user changed their profile picture
-$postImageError = "";
 if (isset($_POST["submitProfilePic"])){
-
-    //To calculate new post ID, count number of rows in database and add 1
-    $countExistingPostsQuery = "SELECT * FROM posts";
-    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
-    $posts_count = sqlsrv_num_rows( $countExistingPosts );
-    $newPostID = $posts_count + 1;
-
-    //Set filename of image to new post ID
-    $path = $_FILES['file']['name'];
-    $ext = pathinfo($path, PATHINFO_EXTENSION);
-    $target_file = "images/" . $newPostID . "." . $ext;
-
-    $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-    
-    // Check if image file is a actual image or fake image
-    if(isset($_POST["submit"])) {
-        $check = getimagesize($_FILES["file"]["tmp_name"]);
-        if($check !== false) {
-            echo "File is an image - " . $check["mime"] . ".";
-            $uploadOk = 1;
-        } else {
-            $postImageError = "File is not an image.";
-            $uploadOk = 0;
-        }
+    $newPostID = calculateNewPostID();
+    $target_file = setFileName();
+    $uploadError = verifyImage();
+    if ($uploadError == "")
+        $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser') ");
+        $target_file = substr($target_file, 7);
+        $newProfilePicSubmit = sqlsrv_query($conn, "UPDATE users SET profile_pic = '$target_file' WHERE username = '$loggedInUser'");
+        if (!$newPostSubmit){
+            print_r(sqlsrv_errors());
     }
-    // Check file size
-    if ($_FILES["file"]["size"] > 500000) {
-        $postImageError = "Sorry, your file is too large.";
-        $uploadOk = 0;}
-    // Allow certain file formats
-    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
-        $postImageError = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-        $uploadOk = 0;}
-    // if everything is ok, try to upload file
-    if ($uploadOk == 1) {   
-        if (!move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
-            $postImageError = "Sorry, there was an error uploading your file.";}
-    }
-
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser') ";
-    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
-
-    $newProfilePic = $newPostID . "." . $ext;
-    $newProfilePicQuery = "UPDATE users SET profile_pic = '$newProfilePic' WHERE username = '$loggedInUser'";
-    $newProfilePicSubmit = sqlsrv_query($conn, $newProfilePicQuery);
-
-    if (!$newPostSubmit){
-        print_r(sqlsrv_errors());}
-
 }
 
 ?>
@@ -379,7 +306,7 @@ if (isset($_POST["submitProfilePic"])){
                         "<input type='submit' value='Submit' name='submitProfilePic'>".
                         "</form>";
                 }
-                echo '<div class="error">' . $postImageError . '</div><br>';
+                echo '<div class="error">' . $uploadError . '</div><br>';
 
 
 
@@ -414,7 +341,7 @@ if (isset($_POST["submitProfilePic"])){
                         "<input type='submit' value='Post' name='postImage'>".
                         "</form>";
                 }
-                echo '<div class="error">' . $postImageError . '</div><br>';
+                echo '<div class="error">' . $uploadError . '</div><br>';
 
             }
             elseif (in_array($selectedUserID, $currentUserFriendsArray)){ //If users are friends
@@ -435,7 +362,7 @@ if (isset($_POST["submitProfilePic"])){
                         "<input type='submit' value='Post' name='postImageFriend'>".
                         "</form>";
                 }
-                echo '<div class="error">' . $postImageError . '</div><br>';
+                echo '<div class="error">' . $uploadError . '</div><br>';
             }
             else { //If users are not friends, do not display status entry
                 echo "<br><br>";
