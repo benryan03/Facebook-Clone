@@ -205,11 +205,14 @@ if (isset($_GET["unLikePost"])){
                 "<div class='status'>".
                     "<span class='profileThumb'>".
                         "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
+                        //Get profile pic or null
+                        $getProfilePicQuery = "SELECT profile_pic FROM users WHERE username = '$posts_array_row[2]'";
+                        $getProfilePic = sqlsrv_query($conn, $getProfilePicQuery, array());
+                        $profilePic = sqlsrv_fetch_array($getProfilePic);
 
                         //If profile pic exists, display it. Else, display default profile pic.
-                        if (file_exists("images\\".$posts_array_row[2]."_32.jpg")){echo "images\\".$posts_array_row[2]."_32.jpg";}         
+                        if ($profilePic[0] != null){echo "images/" . $profilePic[0];}                           
                         else {echo "images\default_profile_picture_32.jpg";}
-                        
                 echo    "'></a>".
                     "</span>".
                     
