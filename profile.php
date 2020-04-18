@@ -60,10 +60,6 @@ $currentUserFriendsArray = array_unique($currentUserFriendsArray);
 $currentUserFriendsArray = array_values($currentUserFriendsArray);
 $currentUserFriendsCount = count($currentUserFriendsArray);
 
-
-
-
-
 //Get sent pending friend invites of loggedInUser
 $getCurrentUserPendingInvitesQuery = "SELECT friendid FROM friends WHERE userid = '$currentUserID' AND accepted = 'False'";
 $currentUserPendingInvites = sqlsrv_query($conn, $getCurrentUserPendingInvitesQuery, array(), array( "Scrollable" => 'static' ));
@@ -113,50 +109,38 @@ foreach ($selectedUserFriendsArray as &$value){
     $convert = sqlsrv_fetch_array($convert);	
     $value = $convert[0];}
 
-//
-//If $loggedInUser posts a status to their own Wall
-//
+function calculateNewPostID(){
+    //To calculate new post ID, count number of rows in database and add 1
+    global $conn;
+    $countExistingPosts = sqlsrv_query($conn, "SELECT * FROM posts", array(), array( "Scrollable" => 'static' ));
+    $postsCount = sqlsrv_num_rows($countExistingPosts);
+    $newPostID = $postsCount + 1;
+    return $newPostID;
+}
 
+///////////////////////////////////////////////////
+//If $loggedInUser posts a status to their own Wall
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
-
-    //To calculate new post ID, count number of rows in database and add 1
-    $countExistingPostsQuery = "SELECT * FROM posts";
-    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
-    $posts_count = sqlsrv_num_rows( $countExistingPosts );
-    $newPostID = $posts_count + 1;
-
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser') ";
-    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
+    $newPostID = calculateNewPostID();
+    $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser')");
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
 }
 
-//
+////////////////////////////////////////////////////
 //If $loggedInUser posts a status to a friend's Wall
-//
-
 //Still need to add permission check
 if (isset($_POST["newWallPost"])){
     $newWallPost = $_POST["newWallPost"];
-
-    //To calculate new post ID, count number of rows in database and add 1
-    $countExistingPostsQuery = "SELECT * FROM posts";
-    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
-    $posts_count = sqlsrv_num_rows( $countExistingPosts );
-    $newPostID = $posts_count + 1;
-
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newWallPost', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser') ";
-    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
+    $newPostID = calculateNewPostID();
+    $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '$newWallPost', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser')");
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
-    }
+}
 
-
-
-//
+/////////////////////////////////////////////
 //If user uploaded an image to their own wall
-//
 $postImageError = "";
 if (isset($_POST["postImage"])){
 
@@ -206,9 +190,8 @@ if (isset($_POST["postImage"])){
 
 }
 
-//
+//////////////////////////////////////////////
 //If user uploaded an image to a friend's Wall
-//
 $postImageError = "";
 if (isset($_POST["postImageFriend"])){
 
@@ -257,12 +240,8 @@ if (isset($_POST["postImageFriend"])){
         print_r(sqlsrv_errors());}
 }
 
-
-
-//
+//////////////////////
 //If user liked a post
-//
-
 //Still need to add permission check
 if (isset($_GET["likePost"])){
     $likedPostID = $_GET["likePost"];
@@ -270,10 +249,8 @@ if (isset($_GET["likePost"])){
     $likePost = sqlsrv_query($conn, $likePostQuery);
 }
 
-//
+////////////////////////
 //If user unliked a post
-//
-
 //Still need to add permission check
 if (isset($_GET["unLikePost"])){
     $unLikedPostID = $_GET["unLikePost"];
@@ -281,15 +258,8 @@ if (isset($_GET["unLikePost"])){
     $likePost = sqlsrv_query($conn, $likePostQuery);
 }
 
-
-
-
-
-
-
-//
+///////////////////////////////////////
 //If user changed their profile picture
-//
 $postImageError = "";
 if (isset($_POST["submitProfilePic"])){
 
@@ -343,12 +313,6 @@ if (isset($_POST["submitProfilePic"])){
         print_r(sqlsrv_errors());}
 
 }
-
-
-
-
-
-
 
 ?>
 
@@ -517,7 +481,7 @@ if (isset($_POST["submitProfilePic"])){
                         echo    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>";
                                 
                                 //Post content
-                                if ($posts_array_row[4] != ""){echo "<a href='view_image.php?selectedImage=" . substr(strval($posts_array_row[4]), 7) . "'><img src='" . $posts_array_row[4] . "'></a><br>";}
+                                if ($posts_array_row[4] != " "){echo "<a href='view_image.php?selectedImage=" . substr(strval($posts_array_row[4]), 7) . "'><img src='" . $posts_array_row[4] . "'></a><br>";}
                                 else {echo $posts_array_row[1] . "<br><font size='2'>";}
         
                                 //Get number of likes
