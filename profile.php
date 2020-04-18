@@ -396,7 +396,8 @@ if (isset($_POST["submitProfilePic"])){
             $selectedUserProfilePic = $selectedUserProfilePic[0];
 
             if ($selectedUserProfilePic != null){
-                echo"<a href='view_image.php?selectedImage=" . $selectedUserProfilePic . "&imageType=profile'><img src='images/" .$selectedUserProfilePic. "'></a><br>";                           
+                //Need to add code to create thumbnails on profile pic upload
+                echo"<a href='view_image.php?selectedImage=" . $selectedUserProfilePic . "&imageType=profile'><img src='images/" .$selectedUserProfilePic. "' height='128' width='128'></a><br>";                           
             }
             else {
                 echo "<img src='images\default_profile_picture_128.jpg'></a><br>";
