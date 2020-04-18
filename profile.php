@@ -24,11 +24,12 @@ $currentUserID = $currentUserID[0];
 if (isset($_GET["selectedUser"])){
     $selectedUser = $_GET["selectedUser"];
         
-    //Get userID of selectedUser
-    $getSelectedUserIDQuery = "SELECT id FROM users WHERE username = '$selectedUser'";
+    //Get userID and profile pic of selectedUser
+    $getSelectedUserIDQuery = "SELECT id, profile_pic FROM users WHERE username = '$selectedUser'";
     $getSelectedUserID = sqlsrv_query($conn, $getSelectedUserIDQuery, array());
-    $selectedUserID = sqlsrv_fetch_array($getSelectedUserID);
-    $selectedUserID = $selectedUserID[0];
+    $selectedUserInfo = sqlsrv_fetch_array($getSelectedUserID);
+    $selectedUserID = $selectedUserInfo[0];
+    $selectedUserProfilePic = $selectedUserInfo[1];
 }
 
 //If user sent a friend invite
@@ -254,7 +255,6 @@ if (isset($_POST["postImageFriend"])){
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
-
 }
 
 
@@ -336,7 +336,7 @@ if (isset($_POST["submitProfilePic"])){
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
 
     $newProfilePic = $newPostID . "." . $ext;
-    $newProfilePicQuery = "UPDATE users SET profile_pic = '$newProfilePic' WHERE id = '$loggedInUser";
+    $newProfilePicQuery = "UPDATE users SET profile_pic = '$newProfilePic' WHERE username = '$loggedInUser'";
     $newProfilePicSubmit = sqlsrv_query($conn, $newProfilePicQuery);
 
     if (!$newPostSubmit){
@@ -389,8 +389,14 @@ if (isset($_POST["submitProfilePic"])){
             <!--Profile pic-->
             <?php
             //If profile pic exists, display it. Else, display default profile pic.
-            if (file_exists("images\\" . $selectedUser . "_128.jpg")){
-                echo"<a href='view_image.php?selectedImage=" . $selectedUser . "_128.jpg&imageType=profile'><img src='images\\" .$selectedUser. "_128.jpg'></a><br>";                
+            //Get userID and profile pic of selectedUser
+            $getProfilePicQuery = "SELECT profile_pic FROM users WHERE username = '$selectedUser'";
+            $getProfilePic = sqlsrv_query($conn, $getProfilePicQuery, array());
+            $selectedUserProfilePic = sqlsrv_fetch_array($getProfilePic);
+            $selectedUserProfilePic = $selectedUserProfilePic[0];
+
+            if ($selectedUserProfilePic != null){
+                echo"<a href='view_image.php?selectedImage=" . $selectedUserProfilePic . "&imageType=profile'><img src='images/" .$selectedUserProfilePic. "'></a><br>";                           
             }
             else {
                 echo "<img src='images\default_profile_picture_128.jpg'></a><br>";
@@ -486,8 +492,13 @@ if (isset($_POST["submitProfilePic"])){
                             "<span class='profileThumb'>".
                                 "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
         
+                                //Get profile pic or null
+                                $getProfilePicQuery = "SELECT profile_pic FROM users WHERE username = '$posts_array_row[2]'";
+                                $getProfilePic = sqlsrv_query($conn, $getProfilePicQuery, array());
+                                $profilePic = sqlsrv_fetch_array($getProfilePic);
+
                                 //If profile pic exists, display it. Else, display default profile pic.
-                                if (file_exists("images\\".$posts_array_row[2]."_32.jpg")){echo "images\\".$posts_array_row[2]."_32.jpg";}         
+                                if ($profilePic[0] != null){echo "images/" . $profilePic[0];}                           
                                 else {echo "images\default_profile_picture_32.jpg";}
                                 
                         echo    "'></a>".
