@@ -281,6 +281,75 @@ if (isset($_GET["unLikePost"])){
     $likePost = sqlsrv_query($conn, $likePostQuery);
 }
 
+
+
+
+
+
+
+//
+//If user changed their profile picture
+//
+$postImageError = "";
+if (isset($_POST["submitProfilePic"])){
+
+    //To calculate new post ID, count number of rows in database and add 1
+    $countExistingPostsQuery = "SELECT * FROM posts";
+    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
+    $posts_count = sqlsrv_num_rows( $countExistingPosts );
+    $newPostID = $posts_count + 1;
+
+    //Set filename of image to new post ID
+    $path = $_FILES['file']['name'];
+    $ext = pathinfo($path, PATHINFO_EXTENSION);
+    $target_file = "images/" . $newPostID . "." . $ext;
+
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+    
+    // Check if image file is a actual image or fake image
+    if(isset($_POST["submit"])) {
+        $check = getimagesize($_FILES["file"]["tmp_name"]);
+        if($check !== false) {
+            echo "File is an image - " . $check["mime"] . ".";
+            $uploadOk = 1;
+        } else {
+            $postImageError = "File is not an image.";
+            $uploadOk = 0;
+        }
+    }
+    // Check file size
+    if ($_FILES["file"]["size"] > 500000) {
+        $postImageError = "Sorry, your file is too large.";
+        $uploadOk = 0;}
+    // Allow certain file formats
+    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
+        $postImageError = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+        $uploadOk = 0;}
+    // if everything is ok, try to upload file
+    if ($uploadOk == 1) {   
+        if (!move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
+            $postImageError = "Sorry, there was an error uploading your file.";}
+    }
+
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser') ";
+    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
+
+    $newProfilePic = $newPostID . "." . $ext;
+    $newProfilePicQuery = "UPDATE users SET profile_pic = '$newProfilePic' WHERE id = '$loggedInUser";
+    $newProfilePicSubmit = sqlsrv_query($conn, $newProfilePicQuery);
+
+    if (!$newPostSubmit){
+        print_r(sqlsrv_errors());}
+
+}
+
+
+
+
+
+
+
 ?>
 
 <html>
@@ -321,14 +390,28 @@ if (isset($_GET["unLikePost"])){
             <?php
             //If profile pic exists, display it. Else, display default profile pic.
             if (file_exists("images\\" . $selectedUser . "_128.jpg")){
-                echo"<a href='view_image.php?selectedImage=" . $selectedUser . "_128.jpg'><img src='images\\" .$selectedUser. "_128.jpg'></a><br>";                
+                echo"<a href='view_image.php?selectedImage=" . $selectedUser . "_128.jpg&imageType=profile'><img src='images\\" .$selectedUser. "_128.jpg'></a><br>";                
             }
             else {
                 echo "<img src='images\default_profile_picture_128.jpg'></a><br>";
             }
 
             if ($selectedUser == $loggedInUser){
-                echo "<a href='?'>Change profile picture</a><br><br>";
+
+                //Post an image on your Wall
+                if (!isset($_GET["changeProfilePic"])){
+                    echo "<a href='?selectedUser=" . $selectedUser . "&changeProfilePic'>Change profile picture</a><br><br>";}
+                else {
+                    echo "<form action='?selectedUser=" . $selectedUser . "' method='post' enctype='multipart/form-data'>".
+                        "Select image to upload:<br>".
+                        "<input type='file' name='file' id='file'><br>".
+                        "<input type='submit' value='Submit' name='submitProfilePic'>".
+                        "</form>";
+                }
+                echo '<div class="error">' . $postImageError . '</div><br>';
+
+
+
             }
             else echo "<br>"
             ?>
