@@ -64,6 +64,9 @@ $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
     <div class="contents">
         <div id="searchResults">
             <?php
+
+                //////////////
+                //User results
                 echo nl2br("User results for " . $search . ":\n\n");
 
                 //Count how many users were returned
@@ -96,9 +99,85 @@ $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
                     }
                 }
                 else {
-                    echo "No results found.";
+                    echo "No results found.<br><br>";
                 }
                 
+                //////////////
+                //Post results
+                echo nl2br("Post results for " . $search . ":\n\n");
+
+                //Count how many posts were returned
+                $postQuery = "SELECT * FROM posts WHERE post_text LIKE '%$search%'";
+                $posts_array = sqlsrv_query($conn, $postQuery, array(), array( "Scrollable" => 'static'));
+                $posts_count = sqlsrv_num_rows($posts_array);
+                print_r( sqlsrv_errors() );
+
+                if ($posts_count != 0){
+                    for ($x = 1; $x < $posts_count + 1; $x++){
+                        $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
+                        
+                        //Display a post
+                            echo
+                            "<div class='status'>".
+                                "<span class='profileThumb'>".
+                                    "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
+            
+                                    //Get profile pic or null
+                                    $getProfilePicQuery = "SELECT profile_pic FROM users WHERE username = '$posts_array_row[2]'";
+                                    $getProfilePic = sqlsrv_query($conn, $getProfilePicQuery, array());
+                                    $profilePic = sqlsrv_fetch_array($getProfilePic);
+    
+                                    //If profile pic exists, display it. Else, display default profile pic.
+                                    if ($profilePic[0] != null){echo "images/" . $profilePic[0];}                           
+                                    else {echo "images\default_profile_picture_32.jpg";}
+                                    
+                            echo    "'></a>".
+                                "</span>".
+                                
+                                "<span class='statusContent'>".
+                                    //Username of post author
+                                    "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $posts_array_row[2] . "'>" . $posts_array_row[2]. "</a>" . "</b></font> ";
+            
+                                    //If post is not on author's wall, display username of that user
+                                    if ($posts_array_row[7] != $posts_array_row[8]){echo "<font color='#0080ff'><b></a>" . " > " . "<a href='profile.php?selectedUser=" . $posts_array_row[9] . "'>" . $posts_array_row[9] . "</a>" . "</b></font></br> ";}
+                                    else {echo "<br>";}
+    
+                                    //Date posted
+                            echo    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>";
+                                    
+                                    //Post content
+                                    if ($posts_array_row[4] != " "){echo "<a href='view_image.php?selectedImage=" . substr(strval($posts_array_row[4]), 7) . "'><img src='" . $posts_array_row[4] . "'></a><br><font size='2'>";}
+                                    else {echo $posts_array_row[1] . "<br><font size='2'>";}
+            
+                                    //Get number of likes
+                                    $getLikesQuery = "SELECT * FROM likes WHERE post_id = '$posts_array_row[0]' ";
+                                    $getLikes = sqlsrv_query($conn, $getLikesQuery, array(), array( "Scrollable" => 'static' ));
+                                    $likesCount = sqlsrv_num_rows($getLikes);
+            
+                                    //Convert users who liked current post to array
+                                    $likesArray = array();
+                                    for ($y = 1; $y < $likesCount + 1; $y++){
+                                        $likesRow = sqlsrv_fetch_array($getLikes, SQLSRV_FETCH_NUMERIC); //Select next row
+                                        array_push($likesArray, $likesRow[1]);}
+                                        
+                                    if ($likesCount == 1) {echo "<div class='tooltip'>1 like<span class='tooltiptext'>" . implode(" ,", $likesArray) . "</span></div>&nbsp;";}
+                                    else if ($likesCount > 1) {echo "<div class='tooltip'>" . $likesCount . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray) . "</span></div>&nbsp;";}
+                
+            
+                                    //Like/unlike button
+                                    //if (!in_array($loggedInUser, $likesArray)){echo "<a href='?selectedUser=" . $selectedUser . "&likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp";}
+                                    ///else {echo "<a href='?selectedUser=" . $selectedUser . "&unLikePost=" . $posts_array_row[0] . "'>Unlike</a>&nbsp";}
+            
+                                    //Comment button
+                            echo    /*"<a href='?'>Comment</a>*/"</font>" .
+                                "</span>".
+                            "</div><br><br>";
+                    }
+                }
+                else {
+                    echo "No results found.";
+                }
+
             ?>
         </div>
     </div>
