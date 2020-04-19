@@ -307,9 +307,6 @@ if (isset($_POST["submitProfilePic"])){
                         "</form>";
                 }
                 echo '<div class="error">' . $uploadError . '</div><br>';
-
-
-
             }
             else echo "<br>"
             ?>
@@ -408,7 +405,7 @@ if (isset($_POST["submitProfilePic"])){
                         echo    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>";
                                 
                                 //Post content
-                                if ($posts_array_row[4] != " "){echo "<a href='view_image.php?selectedImage=" . substr(strval($posts_array_row[4]), 7) . "'><img src='" . $posts_array_row[4] . "'></a><br>";}
+                                if ($posts_array_row[4] != " "){echo "<a href='view_image.php?selectedImage=" . substr(strval($posts_array_row[4]), 7) . "'><img src='" . $posts_array_row[4] . "'></a><br><font size='2'>";}
                                 else {echo $posts_array_row[1] . "<br><font size='2'>";}
         
                                 //Get number of likes

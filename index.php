@@ -37,10 +37,8 @@ $getPendingRequestsQuery = "SELECT * FROM friends WHERE friendid = '$currentUser
 $getPendingRequests = sqlsrv_query($conn, $getPendingRequestsQuery, array(), array( "Scrollable" => 'static' ));
 $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
 
-//
+///////////////////////////////
 //If new status has been posted
-//
-
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
 
@@ -56,9 +54,8 @@ if (isset($_POST["new_status"])){
         print_r(sqlsrv_errors());}
 }
 
-//
+///////////////////////////
 //If user uploaded an image
-//
 $postImageError = "";
 if (isset($_POST["postImage"])){
 
@@ -108,10 +105,8 @@ if (isset($_POST["postImage"])){
 
 }
 
-//
+//////////////////////
 //If user liked a post
-//
-
 //Still need to add permission check
 if (isset($_GET["likePost"])){
     $likedPostID = $_GET["likePost"];
@@ -119,10 +114,8 @@ if (isset($_GET["likePost"])){
     $likePost = sqlsrv_query($conn, $likePostQuery);
 }
 
-//
+////////////////////////
 //If user unliked a post
-//
-
 //Still need to add permission check
 if (isset($_GET["unLikePost"])){
     $unLikedPostID = $_GET["unLikePost"];
@@ -153,7 +146,6 @@ if (isset($_GET["unLikePost"])){
                     echo '&nbsp;&nbsp;<a href="requests.php" id="requests">'.$pendingRequestsCount.' new friend requests</a>';
                 }
             ?>
-
         </span>
         <span id="userOptions">
             <?php if (!isset($_SESSION["loggedInUser"])){echo '<a href="register.php">Register</a>&nbsp;';} ?>
@@ -163,7 +155,6 @@ if (isset($_GET["unLikePost"])){
             ?>
         </span>
     </div>
-
 
     <!-- Content feed-->
     <div class="feed">
@@ -228,7 +219,7 @@ if (isset($_GET["unLikePost"])){
                 echo    "<font color='gray' size='2'>" . date_format($posts_array_row[3], "m/d/Y h:ia") . "</font><br>";
                         
                         //Post content
-                        if ($posts_array_row[4] != " "){echo "<a href='view_image.php?selectedImage=" . substr(strval($posts_array_row[4]), 7) . "'><img src='" . $posts_array_row[4] . "'></a><br>";}
+                        if ($posts_array_row[4] != " "){echo "<a href='view_image.php?selectedImage=" . substr(strval($posts_array_row[4]), 7) . "'><img src='" . $posts_array_row[4] . "'></a><br><font size='2'>";}
                         else {echo $posts_array_row[1] . "<br><font size='2'>";}
 
                         //Get number of likes
