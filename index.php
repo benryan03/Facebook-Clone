@@ -135,7 +135,8 @@ if (isset($_POST["submitComment"])){
     $posts_count = sqlsrv_num_rows( $countExistingPosts );
     $newPostID = $posts_count + 1;
     
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '', '$timestamp', '0', '0', '$currentUserID', 'NULL', $commentOn) ";
+    $commentText = $_POST['comment'];
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$commentText', '$loggedInUser', '$timestamp', '', '$timestamp', '0', '0', '$currentUserID', 'NULL', $commentOn) ";
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
@@ -186,15 +187,15 @@ if (isset($_POST["submitComment"])){
 
         <!-- Post an image-->
         <?php
-            if (!isset($_GET["postImage"])){
-                echo "<a href='?postImage'>Post an image</a><br><br>";}
-            else {
-                echo "<form action='?' method='post' enctype='multipart/form-data'>".
-                    "Select image to post:<br>".
-                    "<input type='file' name='file' id='file'><br>".
-                    "<input type='submit' value='Post' name='postImage'>".
-                    "</form>";
-            }
+        if (!isset($_GET["postImage"])){
+            echo "<a href='?postImage'>Post an image</a><br><br>";}
+        else {
+            echo "<form action='?' method='post' enctype='multipart/form-data'>".
+                "Select image to post:<br>".
+                "<input type='file' name='file' id='file'><br>".
+                "<input type='submit' value='Post' name='postImage'>".
+                "</form>";
+        }
         ?>
         <div class="error"><?php echo $postImageError; ?></div>
             
@@ -269,19 +270,24 @@ if (isset($_POST["submitComment"])){
                 echo"</span><br>";
         
 
+                    
+                    //Count how many comments the post has
+                    $comments_array = sqlsrv_query($conn, "SELECT * FROM posts WHERE comment_of = '$posts_array_row[0]' ", array(), array( "Scrollable" => 'static'));
+                    $comments_count = sqlsrv_num_rows($comments_array);
+                    
+                                     
+                    if ($comments_count > 0){
+                        for ($z = 1; $z < $comments_count + 1; $z++){
+                            $comments_array_row = sqlsrv_fetch_array($comments_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
+                            echo "<span class='statusComment'>" . 
+                            $comments_array_row[1] . 
+                            "</span><br>";
+                            
+                        }
+                    }
 
 
-
-
-
-
-
-
-
-
-
-
-                "</div><br><br>";
+                echo "</div><br><br>";
             }
         }
 
