@@ -123,6 +123,23 @@ if (isset($_GET["unLikePost"])){
     $likePost = sqlsrv_query($conn, $likePostQuery);
 }
 
+///////////////////////////////////////
+//If user submitted a comment on a post
+if (isset($_POST["submitComment"])){
+
+    $commentOn = $_GET["commentOn"];
+
+    //To calculate new post ID, count number of rows in database and add 1
+    $countExistingPostsQuery = "SELECT * FROM posts";
+    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
+    $posts_count = sqlsrv_num_rows( $countExistingPosts );
+    $newPostID = $posts_count + 1;
+    
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '', '$timestamp', '0', '0', '$currentUserID', 'NULL', $commentOn) ";
+    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
+    if (!$newPostSubmit){
+        print_r(sqlsrv_errors());}
+    }
 ?>
 
 <html>
@@ -182,7 +199,7 @@ if (isset($_GET["unLikePost"])){
         <div class="error"><?php echo $postImageError; ?></div>
             
         <?php
-        //Count how many comments are in the the thread
+        //Count how many posts are in the the feed
         $currentUserFriendsString = "'".implode("', '", $currentUserFriendsArray)."'";
         $query = "SELECT * FROM posts WHERE post_author_id IN ($currentUserFriendsString) OR post_author = '$loggedInUser' ORDER BY date_submitted DESC";
         $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
@@ -191,7 +208,8 @@ if (isset($_GET["unLikePost"])){
         for ($x = 1; $x < $posts_count + 1; $x++){
             $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
             
-            //Display a post
+            if ($posts_array_row[10] == null){ //if post is not a post comment
+            //Display post
                 echo
                 "<div class='status'>".
                     "<span class='profileThumb'>".
@@ -240,10 +258,31 @@ if (isset($_GET["unLikePost"])){
                         if (!in_array($loggedInUser, $likesArray)){echo "<a href='?likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp";}
                         else {echo "<a href='?unLikePost=" . $posts_array_row[0] . "'>Unlike</a>&nbsp";}
 
-                        //Comment button
-                echo    "<a href='?'>Comment</a></font>" .
-                    "</span>".
+                        //Comment button/box
+                        if (isset($_GET["commentOn"]) && $_GET["commentOn"] == $posts_array_row[0]) { echo
+                            "<form action='?commentOn=" . $posts_array_row[0] . "' method='post'>" .
+                            "<input type='text' id='comment' placeholder='Add a comment'>" . 
+                            "<input type='submit' value='Submit' name='submitComment'><br>" . 
+                            "</form>";
+                        }
+                        else {echo "<a href='?commentOn=" . $posts_array_row[0] . "'>Comment</a></font>";}
+                echo"</span><br>";
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
                 "</div><br><br>";
+            }
         }
 
         ?>
