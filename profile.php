@@ -453,8 +453,8 @@ if (isset($_POST["submitComment"])){
                                     "<input type='submit' value='Submit' name='submitComment'><br>" . 
                                     "</form>";
                                 }
-                                else {echo "<a href='?selectedUser=" . $selectedUser . "&commentOn=" . $posts_array_row[0] . "'>Comment</a></font>";}
-                        echo"</span><br><br>";
+                                else {echo "<a href='?selectedUser=" . $selectedUser . "&commentOn=" . $posts_array_row[0] . "'>Comment</a>";}
+                        echo"</font></span><br><br>";
                             
                     
                                 //Count how many comments the post has
