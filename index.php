@@ -242,7 +242,7 @@ if (isset($_POST["submitComment"])){
                         else {echo $posts_array_row[1] . "<br><font size='2'>";}
 
                         //Get number of likes
-                        $getLikesQuery = "SELECT * FROM likes WHERE post_id = '$posts_array_row[0]' ";
+                        $getLikesQuery = "SELECT * FROM likes WHERE post_id = '$posts_array_row[0]'";
                         $getLikes = sqlsrv_query($conn, $getLikesQuery, array(), array( "Scrollable" => 'static' ));
                         $likesCount = sqlsrv_num_rows($getLikes);
 
@@ -262,7 +262,7 @@ if (isset($_POST["submitComment"])){
                         //Comment button/box
                         if (isset($_GET["commentOn"]) && $_GET["commentOn"] == $posts_array_row[0]) { echo
                             "<form action='?commentOn=" . $posts_array_row[0] . "' method='post'>" .
-                            "<input type='text' id='comment' placeholder='Add a comment'>" . 
+                            "<input type='text' name='comment' placeholder='Add a comment'>" . 
                             "<input type='submit' value='Submit' name='submitComment'><br>" . 
                             "</form>";
                         }

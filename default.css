@@ -160,27 +160,23 @@ body {
 
 
 .status {
-    border: solid red 1px;
+    
 }
 
 .profileThumb {
     display: inline;
     padding-right: 10px;
-    border: solid yellow 1px;
     max-width: 32px;
 }
 
 .statusContent {
     display: inline-block;
     vertical-align: top;
-    border: 1px solid blue;
     max-width: 674px;
 }
 
 .statusComment {
     display: inline-block;
-    border: solid green 1px;
-    background-color: green;
     padding-left: 100px;
 }
 
