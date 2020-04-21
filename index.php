@@ -48,7 +48,7 @@ if (isset($_POST["new_status"])){
     $posts_count = sqlsrv_num_rows( $countExistingPosts );
     $newPostID = $posts_count + 1;
 
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser') ";
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser', null) ";
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
@@ -98,7 +98,7 @@ if (isset($_POST["postImage"])){
             $postImageError = "Sorry, there was an error uploading your file.";}
     }
 
-    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser') ";
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser', null) ";
     $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}

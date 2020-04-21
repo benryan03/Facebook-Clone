@@ -165,7 +165,7 @@ function verifyImage(){
 if (isset($_POST["new_status"])){
     $newStatus = $_POST["new_status"];
     $newPostID = calculateNewPostID();
-    $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser')");
+    $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '$newStatus', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser', null)");
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
 }
@@ -176,7 +176,7 @@ if (isset($_POST["new_status"])){
 if (isset($_POST["newWallPost"])){
     $newWallPost = $_POST["newWallPost"];
     $newPostID = calculateNewPostID();
-    $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '$newWallPost', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser')");
+    $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '$newWallPost', '$loggedInUser', '$timestamp', ' ', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser', null)");
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
 }
@@ -207,7 +207,7 @@ if (isset($_POST["postImage"])){
     $target_file = setFileName();
     $uploadError = verifyImage();
     if ($uploadError == "")
-        $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser') ");
+        $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$currentUserID', '$currentUserID', '$loggedInUser', null) ");
         if (!$newPostSubmit){
             print_r(sqlsrv_errors());
     }
@@ -220,7 +220,7 @@ if (isset($_POST["postImageFriend"])){
     $target_file = setFileName();
     $uploadError = verifyImage();
     if ($uploadError == "")
-        $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser') ");
+        $newPostSubmit = sqlsrv_query($conn, "INSERT INTO posts VALUES ('$newPostID', '', '$loggedInUser', '$timestamp', '$target_file', '$timestamp', '0', '$selectedUserID', '$currentUserID', '$selectedUser', null) ");
         if (!$newPostSubmit){
             print_r(sqlsrv_errors());
     }
@@ -259,7 +259,7 @@ if (isset($_POST["submitComment"])){
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
     }
-    
+
 ?>
 
 <html>
