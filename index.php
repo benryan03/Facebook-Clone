@@ -302,13 +302,9 @@ if (isset($_POST["submitComment"])){
                                 echo    "<font color='gray' size='2'>" . date_format($comments_array_row[3], "m/d/Y h:ia") . "</font><br>";
                                         
                                         //Post content
-                                        if ($comments_array_row[4] != ""){echo "<a href='view_image.php?selectedImage=" . substr(strval($comments_array_row[4]), 7) . "'><img src='" . $comments_array_row[4] . "'></a>";}
-                                        else {echo $comments_array_row[1];}
+                                        if ($comments_array_row[4] != ""){echo "<a href='view_image.php?selectedImage=" . substr(strval($comments_array_row[4]), 7) . "'><img src='" . $comments_array_row[4] . "'></a><br>";}
+                                        else {echo $comments_array_row[1] . "<br>";}
                                   
-                                        echo "<font size='1'><br><br></font>";
-                                        /*
-                                        echo "<font size='2'>";
-
                                         //Get number of likes
                                         $getLikesQuery2 = "SELECT * FROM likes WHERE post_id = '$comments_array_row[0]'";
                                         $getLikes2 = sqlsrv_query($conn, $getLikesQuery2, array(), array( "Scrollable" => 'static' ));
@@ -316,20 +312,20 @@ if (isset($_POST["submitComment"])){
                 
                                         //Convert users who liked current post to array
                                         $likesArray2 = array();
-                                        for ($z = 1; $z < $likesCount2 + 1; $z++){
+                                        for ($a = 1; $a < $likesCount2 + 1; $a++){
                                             $likesRow2 = sqlsrv_fetch_array($getLikes2, SQLSRV_FETCH_NUMERIC); //Select next row
                                             array_push($likesArray2, $likesRow2[1]);}
-                
+
+                                        echo "<font size='2'>";
                                         if ($likesCount2 == 1) {echo "<div class='tooltip'>1 like<span class='tooltiptext'>" . implode(" ,", $likesArray2) . "</span></div>&nbsp;";}
                                         else if ($likesCount2 > 1) {echo "<div class='tooltip'>" . $likesCount2 . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray2) . "</span></div>&nbsp;";}
                 
                                         //Like/unlike button
                                         if (!in_array($loggedInUser, $likesArray2)){echo "<a href='?likePost=" . $comments_array_row[0] . "'>Like</a>&nbsp";}
                                         else {echo "<a href='?unLikePost=" . $comments_array_row[0] . "'>Unlike</a>&nbsp";}
-                                        */
-                
+                                        echo "</font>";
 
-
+                                        echo "<font size='1'><br><br></font>";
                                 echo "</span></div>";                  
                         }
                     }
