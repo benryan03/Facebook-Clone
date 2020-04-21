@@ -241,6 +241,25 @@ if (isset($_POST["submitProfilePic"])){
     }
 }
 
+///////////////////////////////////////
+//If user submitted a comment on a post
+if (isset($_POST["submitComment"])){
+
+    $commentOn = $_GET["commentOn"];
+
+    //To calculate new post ID, count number of rows in database and add 1
+    $countExistingPostsQuery = "SELECT * FROM posts";
+    $countExistingPosts = sqlsrv_query($conn, $countExistingPostsQuery, array(), array( "Scrollable" => 'static' ));
+    $posts_count = sqlsrv_num_rows( $countExistingPosts );
+    $newPostID = $posts_count + 1;
+    
+    $commentText = $_POST['comment'];
+    $newPostQuery = "INSERT INTO posts VALUES ('$newPostID', '$commentText', '$loggedInUser', '$timestamp', '', '$timestamp', '0', '0', '$currentUserID', 'NULL', $commentOn) ";
+    $newPostSubmit = sqlsrv_query($conn, $newPostQuery);
+    if (!$newPostSubmit){
+        print_r(sqlsrv_errors());}
+    }
+    
 ?>
 
 <html>
@@ -427,10 +446,76 @@ if (isset($_POST["submitProfilePic"])){
                                 if (!in_array($loggedInUser, $likesArray)){echo "<a href='?selectedUser=" . $selectedUser . "&likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp";}
                                 else {echo "<a href='?selectedUser=" . $selectedUser . "&unLikePost=" . $posts_array_row[0] . "'>Unlike</a>&nbsp";}
         
-                                //Comment button
-                        echo    "<a href='?'>Comment</a></font>" .
-                            "</span>".
-                        "</div><br><br>";
+                                //Comment button/box
+                                if (isset($_GET["commentOn"]) && $_GET["commentOn"] == $posts_array_row[0]) { echo
+                                    "<form action='?commentOn=" . $posts_array_row[0] . "' method='post'>" .
+                                    "<input type='text' name='comment' placeholder='Add a comment'>" . 
+                                    "<input type='submit' value='Submit' name='submitComment'><br>" . 
+                                    "</form>";
+                                }
+                                else {echo "<a href='?selectedUser=" . $selectedUser . "&commentOn=" . $posts_array_row[0] . "'>Comment</a></font>";}
+                        echo"</span><br><br>";
+                            
+                    
+                                //Count how many comments the post has
+                                $comments_array = sqlsrv_query($conn, "SELECT * FROM posts WHERE comment_of = '$posts_array_row[0]' ", array(), array( "Scrollable" => 'static'));
+                                $comments_count = sqlsrv_num_rows($comments_array);
+                                
+                                                
+                                if ($comments_count > 0){
+                                    for ($z = 1; $z < $comments_count + 1; $z++){
+                                        $comments_array_row = sqlsrv_fetch_array($comments_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
+                                        echo
+                                            "<div class='statusComment'>".
+                                                "<span class='commentProfileThumb'>".
+                                                    "<a href='profile.php?selectedUser=" . $comments_array_row[2] . "'><img src='";
+                                                    //Get profile pic or null
+                                                    $getProfilePicQuery2 = "SELECT profile_pic FROM users WHERE username = '$comments_array_row[2]'";
+                                                    $getProfilePic2 = sqlsrv_query($conn, $getProfilePicQuery2, array());
+                                                    $profilePic2 = sqlsrv_fetch_array($getProfilePic2);
+                            
+                                                    //If profile pic exists, display it. Else, display default profile pic.
+                                                    if ($profilePic2[0] != null){echo "images/" . $profilePic2[0];}                           
+                                                    else {echo "images\default_profile_picture_32.jpg";}
+                                            echo    "'></a>".
+                                                "</span>" . 
+                                                
+                                                "<span class='commentContent'>".
+                                                    //Username of post author
+                                                    "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $comments_array_row[2] . "'>" . $comments_array_row[2]. "</a>" . "</b></font><br> ";
+                                
+                                                    //Date posted
+                                            echo    "<font color='gray' size='2'>" . date_format($comments_array_row[3], "m/d/Y h:ia") . "</font><br>";
+                                                    
+                                                    //Post content
+                                                    if ($comments_array_row[4] != ""){echo "<a href='view_image.php?selectedImage=" . substr(strval($comments_array_row[4]), 7) . "'><img src='" . $comments_array_row[4] . "'></a><br>";}
+                                                    else {echo $comments_array_row[1] . "<br>";}
+                                            
+                                                    //Get number of likes
+                                                    $getLikesQuery2 = "SELECT * FROM likes WHERE post_id = '$comments_array_row[0]'";
+                                                    $getLikes2 = sqlsrv_query($conn, $getLikesQuery2, array(), array( "Scrollable" => 'static' ));
+                                                    $likesCount2 = sqlsrv_num_rows($getLikes2);
+                            
+                                                    //Convert users who liked current post to array
+                                                    $likesArray2 = array();
+                                                    for ($a = 1; $a < $likesCount2 + 1; $a++){
+                                                        $likesRow2 = sqlsrv_fetch_array($getLikes2, SQLSRV_FETCH_NUMERIC); //Select next row
+                                                        array_push($likesArray2, $likesRow2[1]);}
+
+                                                    echo "<font size='2'>";
+                                                    if ($likesCount2 == 1) {echo "<div class='tooltip'>1 like<span class='tooltiptext'>" . implode(" ,", $likesArray2) . "</span></div>&nbsp;";}
+                                                    else if ($likesCount2 > 1) {echo "<div class='tooltip'>" . $likesCount2 . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray2) . "</span></div>&nbsp;";}
+                            
+                                                    //Like/unlike button
+                                                    if (!in_array($loggedInUser, $likesArray2)){echo "<a href='?likePost=" . $comments_array_row[0] . "'>Like</a>&nbsp";}
+                                                    else {echo "<a href='?unLikePost=" . $comments_array_row[0] . "'>Unlike</a>&nbsp";}
+                                                    echo "</font>";
+
+                                                    echo "<font size='1'><br><br></font>";
+                                            echo "</span></div>";                  
+                                    }
+                                }
+
                 }
             }
 
