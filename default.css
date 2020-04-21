@@ -175,9 +175,28 @@ body {
     max-width: 674px;
 }
 
+
+
+
+
+
+
+
 .statusComment {
-    display: inline-block;
+    display: block;
     padding-left: 100px;
+}
+
+.commentProfileThumb {
+    display: inline;
+    padding-right: 10px;
+    max-width: 32px;
+}
+
+.commentContent {
+    display: inline-block;
+    vertical-align: top;
+    max-width: 674px;
 }
 
 
