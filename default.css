@@ -184,7 +184,7 @@ body {
 
 .statusComment {
     display: block;
-    padding-left: 100px;
+    padding-left: 85px;
 }
 
 .commentProfileThumb {
@@ -196,7 +196,7 @@ body {
 .commentContent {
     display: inline-block;
     vertical-align: top;
-    max-width: 674px;
+    max-width: 590px;
 }
 
 
