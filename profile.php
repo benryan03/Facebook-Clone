@@ -448,7 +448,7 @@ if (isset($_POST["submitComment"])){
         
                                 //Comment button/box
                                 if (isset($_GET["commentOn"]) && $_GET["commentOn"] == $posts_array_row[0]) { echo
-                                    "<form action='?commentOn=" . $posts_array_row[0] . "' method='post'>" .
+                                    "<form action='?selectedUser=" . $selectedUser . "&commentOn=" . $posts_array_row[0] . "' method='post'>" .
                                     "<input type='text' name='comment' placeholder='Add a comment'>" . 
                                     "<input type='submit' value='Submit' name='submitComment'><br>" . 
                                     "</form>";
