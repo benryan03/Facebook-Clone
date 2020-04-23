@@ -198,9 +198,9 @@ if (isset($_GET["page"])){
         <div class="error"><?php echo $postImageError; ?></div>
             
         <?php
-        //Count how many posts are in the the feed
+        //Count how many total posts are in the the feed
         $currentUserFriendsString = "'".implode("', '", $currentUserFriendsArray)."'";
-        $query = "SELECT * FROM posts WHERE post_author_id IN ($currentUserFriendsString) OR post_author = '$loggedInUser' ORDER BY date_submitted DESC";
+        $query = "SELECT * FROM posts WHERE post_author_id IN ($currentUserFriendsString) AND comment_of IS NULL OR post_author = '$loggedInUser' AND comment_of IS NULL";
         $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
         $posts_count = sqlsrv_num_rows($posts_array);
 
