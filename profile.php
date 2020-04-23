@@ -254,6 +254,14 @@ if (isset($_POST["submitComment"])){
         print_r(sqlsrv_errors());}
     }
 
+///////////////////////////
+//If not viewing first page
+$page_number = 0;
+if (isset($_GET["page"])){
+    $page_number = $_GET["page"];
+
+}
+
 ?>
 
 <html>
@@ -380,11 +388,16 @@ if (isset($_POST["submitComment"])){
             //If users are friends, display posts on selectedUser's Wall
             if ($selectedUserID == $currentUserID || in_array($selectedUserID, $currentUserFriendsArray)){
                 //Count how many comments are in the the thread
-                $query = "SELECT * FROM posts WHERE wall = '$selectedUserID' ORDER BY date_submitted DESC";
+                $query = "SELECT * FROM posts WHERE wall = '$selectedUserID' AND comment_of IS NULL";
                 $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
                 $posts_count = sqlsrv_num_rows($posts_array);
 
-                for ($x = 1; $x < $posts_count + 1; $x++){
+                //Query 10 posts for page
+                $offset = $page_number * 10;
+                $query = "SELECT * FROM posts WHERE wall = '$selectedUserID' AND comment_of IS NULL ORDER BY date_submitted DESC OFFSET $offset ROWS FETCH NEXT 10 ROWS ONLY";
+                $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
+            
+                for ($x = 1; $x < 11; $x++){
                     $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
                     
                     //Display a post
@@ -433,17 +446,17 @@ if (isset($_POST["submitComment"])){
                             else if ($likesCount > 1) {echo "<div class='tooltip'>" . $likesCount . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray) . "</span></div>&nbsp;";}
     
                             //Like/unlike button
-                            if (!in_array($loggedInUser, $likesArray)){echo "<a href='?selectedUser=" . $selectedUser . "&likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp";}
-                            else {echo "<a href='?selectedUser=" . $selectedUser . "&unLikePost=" . $posts_array_row[0] . "'>Unlike</a>&nbsp";}
+                            if (!in_array($loggedInUser, $likesArray)){echo "<a href='?selectedUser=" . $selectedUser . "&likePost=" . $posts_array_row[0] . "&page=" . $page_number . "'>Like</a>&nbsp";}
+                            else {echo "<a href='?selectedUser=" . $selectedUser . "&unLikePost=" . $posts_array_row[0] . "&page=" . $page_number . "'>Unlike</a>&nbsp";}
     
                             //Comment button/box
                             if (isset($_GET["commentOn"]) && $_GET["commentOn"] == $posts_array_row[0]) { echo
-                                "<form action='?selectedUser=" . $selectedUser . "&commentOn=" . $posts_array_row[0] . "' method='post'>" .
+                                "<form action='?selectedUser=" . $selectedUser . "&commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "' method='post'>" .
                                 "<input type='text' name='comment' placeholder='Add a comment'>" . 
                                 "<input type='submit' value='Submit' name='submitComment'><br>" . 
                                 "</form>";
                             }
-                            else {echo "<a href='?selectedUser=" . $selectedUser . "&commentOn=" . $posts_array_row[0] . "'>Comment</a>";}
+                            else {echo "<a href='?selectedUser=" . $selectedUser . "&commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "'>Comment</a>";}
                 echo        "</font>";
                 echo    "</div><br>";
 
@@ -497,8 +510,8 @@ if (isset($_POST["submitComment"])){
                                 else if ($likesCount2 > 1) {echo "<div class='tooltip'>" . $likesCount2 . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray2) . "</span></div>&nbsp;";}
         
                                 //Like/unlike button
-                                if (!in_array($loggedInUser, $likesArray2)){echo "<a href='?likePost=" . $comments_array_row[0] . "'>Like</a>&nbsp";}
-                                else {echo "<a href='?unLikePost=" . $comments_array_row[0] . "'>Unlike</a>&nbsp";}
+                                if (!in_array($loggedInUser, $likesArray2)){echo "<a href='?likePost=" . $comments_array_row[0] . "&page=" . $page_number . "'>Like</a>&nbsp";}
+                                else {echo "<a href='?unLikePost=" . $comments_array_row[0] . "&page=" . $page_number . "'>Unlike</a>&nbsp";}
                 echo            "</font>";
 
                 echo            "<font size='1'><br><br></font>";
@@ -513,6 +526,7 @@ if (isset($_POST["submitComment"])){
             else {
                 echo "You are not friends with ".$selectedUser;
             }
+            echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>";
             ?>
         </span>
         <span class="sidebar">
