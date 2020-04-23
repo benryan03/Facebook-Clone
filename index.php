@@ -139,11 +139,6 @@ if (isset($_GET["page"])){
 
 }
 
-
-
-
-
-
 ?>
 
 <html>
@@ -261,17 +256,17 @@ if (isset($_GET["page"])){
                         else if ($likesCount > 1) {echo "<div class='tooltip'>" . $likesCount . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray) . "</span></div>&nbsp;";}
 
                         //Like/unlike button
-                        if (!in_array($loggedInUser, $likesArray)){echo "<a href='?likePost=" . $posts_array_row[0] . "'>Like</a>&nbsp";}
-                        else {echo "<a href='?unLikePost=" . $posts_array_row[0] . "'>Unlike</a>&nbsp";}
+                        if (!in_array($loggedInUser, $likesArray)){echo "<a href='?likePost=" . $posts_array_row[0] . "&page=" . $page_number . "'>Like</a>&nbsp";}
+                        else {echo "<a href='?unLikePost=" . $posts_array_row[0] . "&page=" . $page_number . "'>Unlike</a>&nbsp";}
 
                         //Comment button/box
                         if (isset($_GET["commentOn"]) && $_GET["commentOn"] == $posts_array_row[0]) { echo
-                            "<form action='?commentOn=" . $posts_array_row[0] . "' method='post'>" .
+                            "<form action='?commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "' method='post'>" .
                             "<input type='text' name='comment' placeholder='Add a comment'>" . 
                             "<input type='submit' value='Submit' name='submitComment'><br>" . 
                             "</form>";
                         }
-                        else {echo "<a href='?commentOn=" . $posts_array_row[0] . "'>Comment</a>";}
+                        else {echo "<a href='?commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "'>Comment</a>";}
             echo        "</font>";
             echo    "</span><br><br>";
 
@@ -324,8 +319,8 @@ if (isset($_GET["page"])){
                             else if ($likesCount2 > 1) {echo "<div class='tooltip'>" . $likesCount2 . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray2) . "</span></div>&nbsp;";}
     
                             //Like/unlike button
-                            if (!in_array($loggedInUser, $likesArray2)){echo "<a href='?likePost=" . $comments_array_row[0] . "'>Like</a>&nbsp";}
-                            else {echo "<a href='?unLikePost=" . $comments_array_row[0] . "'>Unlike</a>&nbsp";}
+                            if (!in_array($loggedInUser, $likesArray2)){echo "<a href='?likePost=" . $comments_array_row[0] . "&page=" . $page_number ."'>Like</a>&nbsp";}
+                            else {echo "<a href='?unLikePost=" . $comments_array_row[0] . "&page=" . $page_number . "'>Unlike</a>&nbsp";}
                             echo "</font>";
 
                             echo "<font size='1'><br><br></font>";
