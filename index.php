@@ -130,6 +130,20 @@ if (isset($_POST["submitComment"])){
     if (!$newPostSubmit){
         print_r(sqlsrv_errors());}
 }
+
+///////////////////////////
+//If not viewing first page
+$page_number = 0;
+if (isset($_GET["page"])){
+    $page_number = $_GET["page"];
+
+}
+
+
+
+
+
+
 ?>
 
 <html>
@@ -195,10 +209,16 @@ if (isset($_POST["submitComment"])){
         $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
         $posts_count = sqlsrv_num_rows($posts_array);
 
-        for ($x = 1; $x < $posts_count + 1; $x++){
+        //Query 10 posts for page
+        $offset = $page_number * 10;
+        $query = "SELECT * FROM posts WHERE post_author_id IN ($currentUserFriendsString) AND comment_of IS NULL OR post_author = '$loggedInUser' AND comment_of IS NULL ORDER BY date_submitted DESC OFFSET $offset ROWS FETCH NEXT 10 ROWS ONLY";
+        $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
+
+        for ($x = 1; $x < 11;){
             $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
             
             if ($posts_array_row[10] == null){ //if post is not a post comment
+                $x++;
                 //Display OP
                 echo "<div class='status'>";
                 echo    "<span class='profileThumb'>";
@@ -319,6 +339,8 @@ if (isset($_POST["submitComment"])){
                 echo "</div><br><br>";
             }
         }
+
+        echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?page=" . ($page_number + 1) . ">Next page</a>";
 
         ?>
     </div>
