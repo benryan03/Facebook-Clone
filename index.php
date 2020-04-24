@@ -209,8 +209,12 @@ if (isset($_GET["page"])){
         $query = "SELECT * FROM posts WHERE post_author_id IN ($currentUserFriendsString) AND comment_of IS NULL OR post_author = '$loggedInUser' AND comment_of IS NULL ORDER BY date_submitted DESC OFFSET $offset ROWS FETCH NEXT 10 ROWS ONLY";
         $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
 
+        $anchor = 0;
+
         for ($x = 1; $x < 11; $x++){
             $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
+            $anchor++;
+            echo "<a id='" . $anchor . "'></a>"; //Direct link to post
             //Display OP
             echo "<div class='status'>";
             echo    "<span class='profileThumb'>";
@@ -256,17 +260,17 @@ if (isset($_GET["page"])){
                         else if ($likesCount > 1) {echo "<div class='tooltip'>" . $likesCount . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray) . "</span></div>&nbsp;";}
 
                         //Like/unlike button
-                        if (!in_array($loggedInUser, $likesArray)){echo "<a href='?likePost=" . $posts_array_row[0] . "&page=" . $page_number . "'>Like</a>&nbsp";}
-                        else {echo "<a href='?unLikePost=" . $posts_array_row[0] . "&page=" . $page_number . "'>Unlike</a>&nbsp";}
+                        if (!in_array($loggedInUser, $likesArray)){echo "<a href='?likePost=" . $posts_array_row[0] . "&page=" . $page_number . "#" . $anchor . "'>Like</a>&nbsp";}
+                        else {echo "<a href='?unLikePost=" . $posts_array_row[0] . "&page=" . $page_number . "#" . $anchor . "'>Unlike</a>&nbsp";}
 
                         //Comment button/box
                         if (isset($_GET["commentOn"]) && $_GET["commentOn"] == $posts_array_row[0]) { echo
-                            "<form action='?commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "' method='post'>" .
+                            "<form action='?commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "#" . $anchor . "' method='post'>" .
                             "<input type='text' name='comment' placeholder='Add a comment'>" . 
                             "<input type='submit' value='Submit' name='submitComment'><br>" . 
                             "</form>";
                         }
-                        else {echo "<a href='?commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "'>Comment</a>";}
+                        else {echo "<a href='?commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "#" . $anchor . "'>Comment</a>";}
             echo        "</font>";
             echo    "</span><br><br>";
 
@@ -278,6 +282,8 @@ if (isset($_GET["page"])){
                     if ($comments_count > 0){
                         for ($z = 1; $z < $comments_count + 1; $z++){
                             $comments_array_row = sqlsrv_fetch_array($comments_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
+                            $anchor++;
+            echo    "<a id='" . $anchor . "'></a>"; //Direct link to comment
                     //Display comment
             echo    "<div class='statusComment'>";
             echo        "<span class='commentProfileThumb'>";
@@ -319,8 +325,8 @@ if (isset($_GET["page"])){
                             else if ($likesCount2 > 1) {echo "<div class='tooltip'>" . $likesCount2 . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray2) . "</span></div>&nbsp;";}
     
                             //Like/unlike button
-                            if (!in_array($loggedInUser, $likesArray2)){echo "<a href='?likePost=" . $comments_array_row[0] . "&page=" . $page_number ."'>Like</a>&nbsp";}
-                            else {echo "<a href='?unLikePost=" . $comments_array_row[0] . "&page=" . $page_number . "'>Unlike</a>&nbsp";}
+                            if (!in_array($loggedInUser, $likesArray2)){echo "<a href='?likePost=" . $comments_array_row[0] . "&page=" . $page_number ."#" . $anchor . "'>Like</a>&nbsp";}
+                            else {echo "<a href='?unLikePost=" . $comments_array_row[0] . "&page=" . $page_number . "#" . $anchor . "'>Unlike</a>&nbsp";}
                             echo "</font>";
 
                             echo "<font size='1'><br><br></font>";
