@@ -395,8 +395,7 @@ if (isset($_GET["page"])){
                 //Query 10 posts for page
                 $offset = $page_number * 10;
                 $query = "SELECT * FROM posts WHERE wall = '$selectedUserID' AND comment_of IS NULL ORDER BY date_submitted DESC OFFSET $offset ROWS FETCH NEXT 10 ROWS ONLY";
-                $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));
-            
+                $posts_array = sqlsrv_query($conn, $query, array(), array( "Scrollable" => 'static'));                    
                 $anchor = 0;
 
                 for ($x = 1; $x < 11; $x++){
@@ -405,6 +404,7 @@ if (isset($_GET["page"])){
                     $anchor++;
                     echo "<a id='" . $anchor . "'></a>"; //Direct link to post
                     //Display a post
+                    if (isset($posts_array_row[0])){
                 echo "<div class='status'>";
                 echo    "<span class='profileThumb'>";
                 echo        "<a href='profile.php?selectedUser=" . $posts_array_row[2] . "'><img src='";
@@ -525,6 +525,7 @@ if (isset($_GET["page"])){
                 echo    "</div>";                  
                             }
                         }
+                    }
                 }
             }
 
@@ -532,7 +533,9 @@ if (isset($_GET["page"])){
             else {
                 echo "You are not friends with ".$selectedUser;
             }
-            echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>";
+            if ($posts_count > 10){
+                echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>";
+            }
             ?>
         </span>
         <span class="sidebar">
