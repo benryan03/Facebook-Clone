@@ -539,10 +539,10 @@ else {
             if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number == 0) { //First of multiple pages
                 echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>&nbsp;";
             }
-            else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number != 0 && ((($page_number + 1) * 10) > $posts_count)) { //Multiple pages, not first or last
+            else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number > 0 && ((($page_number + 1) * 10) < $posts_count)) { //Multiple pages, not first or last
                 echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
             }
-            else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number != 0) { //Last of multiple pages, with no posts left over
+            else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number > 0) { //Last of multiple pages, with no posts left over
                 echo "Showing posts " . (($page_number * 10) + 1) . "-" . $posts_count . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
             }
             else if ($posts_count <= 10){ //Only page
