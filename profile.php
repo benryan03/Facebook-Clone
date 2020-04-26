@@ -256,10 +256,11 @@ if (isset($_POST["submitComment"])){
 
 ///////////////////////////
 //If not viewing first page
-$page_number = 0;
 if (isset($_GET["page"])){
     $page_number = $_GET["page"];
-
+}
+else {
+    $page_number = 0;
 }
 
 ?>
@@ -478,7 +479,7 @@ if (isset($_GET["page"])){
                         //Display comments on post
                 echo    "<div class='statusComment'>";
                 echo        "<span class='commentProfileThumb'>";
-                echo            "<a href='profile.php?selectedUser=" . $selectedUser . "'><img src='";
+                echo            "<a href='profile.php?selectedUser=" . $comments_array_row[2] . "'><img src='";
                                 //Get profile pic or null
                                 $getProfilePicQuery2 = "SELECT profile_pic FROM users WHERE username = '$comments_array_row[2]'";
                                 $getProfilePic2 = sqlsrv_query($conn, $getProfilePicQuery2, array());
@@ -491,7 +492,7 @@ if (isset($_GET["page"])){
                 echo        "</span>";   
                 echo        "<span class='commentContent'>";
                                 //Username of post author
-                echo            "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $selectedUser . "'>" . $comments_array_row[2]. "</a>" . "</b></font><br> ";
+                echo            "<font color='#0080ff'><b><a href='profile.php?selectedUser=" . $comments_array_row[2] . "'>" . $comments_array_row[2]. "</a>" . "</b></font><br> ";
             
                                 //Date posted
                 echo            "<font color='gray' size='2'>" . date_format($comments_array_row[3], "m/d/Y h:ia") . "</font><br>";
@@ -533,8 +534,22 @@ if (isset($_GET["page"])){
             else {
                 echo "You are not friends with ".$selectedUser;
             }
-            if ($posts_count > 10){
-                echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>";
+
+            //Page navigation links
+            if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number == 0) { //First of multiple pages
+                echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>&nbsp;";
+            }
+            else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number != 0 && ((($page_number + 1) * 10) > $posts_count)) { //Multiple pages, not first or last
+                echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
+            }
+            else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number != 0) { //Last of multiple pages, with no posts left over
+                echo "Showing posts " . (($page_number * 10) + 1) . "-" . $posts_count . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
+            }
+            else if ($posts_count <= 10){ //Only page
+                echo "Showing posts 1-" . $posts_count . " of " . $posts_count;
+            }
+            else if (!isset($posts_array_row[0])){ //Last page, with <10 posts left
+                echo "Showing posts " . (($page_number * 10) + 1) . "-" . $posts_count . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
             }
             ?>
         </span>
