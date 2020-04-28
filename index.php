@@ -37,6 +37,11 @@ $getPendingRequestsQuery = "SELECT * FROM friends WHERE friendid = '$currentUser
 $getPendingRequests = sqlsrv_query($conn, $getPendingRequestsQuery, array(), array( "Scrollable" => 'static' ));
 $pendingRequestsCount = sqlsrv_num_rows($getPendingRequests);
 
+//Get unseen Likes
+$likesNotificationCountQuery = "SELECT * FROM likes WHERE post_author = '$loggedInUser' AND notified = 'False'";
+$getLikesNotificationCount = sqlsrv_query($conn, $likesNotificationCountQuery, array(), array( "Scrollable" => 'static' ));
+$likesNotificationCount = sqlsrv_num_rows($getLikesNotificationCount);
+
 function calculateNewPostID(){
     //To calculate new post ID, count number of rows in database and add 1
     global $conn;
@@ -107,7 +112,8 @@ if (isset($_POST["postImage"])){
 //Still need to add permission check
 if (isset($_GET["likePost"])){
     $likedPostID = $_GET["likePost"];
-    $likePostQuery = "INSERT INTO likes VALUES ('$likedPostID', '$loggedInUser')";
+    $author = $_GET["author"];
+    $likePostQuery = "INSERT INTO likes VALUES ('$likedPostID', '$author', '$loggedInUser', 'false')";
     $likePost = sqlsrv_query($conn, $likePostQuery);
 }
 
@@ -157,9 +163,15 @@ if (isset($_GET["page"])){
     <div id="options">
         <span id="search">   
             <?php
+                //Search bar
                 echo '<form action="search.php" method="post" style="display: inline;"><input type="text" name="search" placeholder="Search"><input type="submit" value="Submit" name="submitSearch"></form>';
+                //Pending friend requests notification
                 if ($pendingRequestsCount > 0){
-                    echo '&nbsp;&nbsp;<a href="requests.php" id="requests">'.$pendingRequestsCount.' new friend requests</a>';
+                    echo '&nbsp;&nbsp;<a href="requests.php"><font color="red">'.$pendingRequestsCount.' new friend requests</font></a>';
+                }
+                //New likes notification
+                if ($likesNotificationCount > 0){
+                    echo '&nbsp;&nbsp;<a href="likes.php"><font color="red">'.$likesNotificationCount.' new likes</font></a>';
                 }
             ?>
         </span>
@@ -255,13 +267,13 @@ if (isset($_GET["page"])){
                         $likesArray = array();
                         for ($y = 1; $y < $likesCount + 1; $y++){
                             $likesRow = sqlsrv_fetch_array($getLikes, SQLSRV_FETCH_NUMERIC); //Select next row
-                            array_push($likesArray, $likesRow[1]);}
+                            array_push($likesArray, $likesRow[2]);}
 
                         if ($likesCount == 1) {echo "<div class='tooltip'>1 like<span class='tooltiptext'>" . implode(" ,", $likesArray) . "</span></div>&nbsp;";}
                         else if ($likesCount > 1) {echo "<div class='tooltip'>" . $likesCount . "&nbsp;likes<span class='tooltiptext'>" . implode(", ", $likesArray) . "</span></div>&nbsp;";}
 
                         //Like/unlike button
-                        if (!in_array($loggedInUser, $likesArray)){echo "<a href='?likePost=" . $posts_array_row[0] . "&page=" . $page_number . "#" . $anchor . "'>Like</a>&nbsp";}
+                        if (!in_array($loggedInUser, $likesArray)){echo "<a href='?likePost=" . $posts_array_row[0] . "&author=" . $posts_array_row[2] . "&page=" . $page_number . "#" . $anchor . "'>Like</a>&nbsp";}
                         else {echo "<a href='?unLikePost=" . $posts_array_row[0] . "&page=" . $page_number . "#" . $anchor . "'>Unlike</a>&nbsp";}
 
                         //Comment button/box
@@ -319,7 +331,7 @@ if (isset($_GET["page"])){
                             $likesArray2 = array();
                             for ($a = 1; $a < $likesCount2 + 1; $a++){
                                 $likesRow2 = sqlsrv_fetch_array($getLikes2, SQLSRV_FETCH_NUMERIC); //Select next row
-                                array_push($likesArray2, $likesRow2[1]);}
+                                array_push($likesArray2, $likesRow2[2]);}
 
                             echo "<font size='2'>";
                             if ($likesCount2 == 1) {echo "<div class='tooltip'>1 like<span class='tooltiptext'>" . implode(" ,", $likesArray2) . "</span></div>&nbsp;";}
