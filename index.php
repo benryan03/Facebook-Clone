@@ -268,7 +268,7 @@ if (isset($_GET["page"])){
                         if (isset($_GET["commentOn"]) && $_GET["commentOn"] == $posts_array_row[0]) { echo
                             "<form action='?commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "#" . $anchor . "' method='post'>" .
                             "<input type='text' name='comment' placeholder='Add a comment'>" . 
-                            "<input type='submit' value='Submit' name='submitComment'><br>" . 
+                            "<input type='submit' value='Submit' name='submitComment'>&nbsp;<a href='?page=" . $page_number . "#" . $anchor . "'>Cancel</a><br>" . 
                             "</form>";
                         }
                         else {echo "<a href='?commentOn=" . $posts_array_row[0] . "&page=" . $page_number . "#" . $anchor . "'>Comment</a>";}
