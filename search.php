@@ -133,7 +133,7 @@ $currentUserFriendsCount = count($currentUserFriendsArray);
                     for ($x = 1; $x < $posts_count + 1; $x++){
                         $posts_array_row = sqlsrv_fetch_array($posts_array, SQLSRV_FETCH_NUMERIC); //Select next row in $query
                             //If logged in user is friends with post author, display post
-                            if ($posts_array_row[2] == $loggedInUser || in_array($posts_array_row[2], $currentUserFriendsArray)){
+                            if ($posts_array_row[2] == $loggedInUser || in_array($posts_array_row[8], $currentUserFriendsArray)){
                                 //Display a post
                                 echo
                                 "<div class='status'>".
