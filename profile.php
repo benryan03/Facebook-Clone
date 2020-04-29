@@ -44,6 +44,12 @@ if (isset($_GET["acceptFriend"])){
     $acceptFriend = sqlsrv_query($conn, $acceptFriendQuery);
 }
 
+//If user just unfriended $selectedUser
+if (isset($_GET["unfriend"])){
+    $unfriendQuery = "DELETE FROM friends WHERE (userid = '$currentUserID' AND friendid = '$selectedUserID') OR (userid = '$selectedUserID' AND friendid = '$currentUserID')";
+    $unfriend = sqlsrv_query($conn, $unfriendQuery);
+}
+
 //Get friends of loggedInUser
 $getCurrentUserFriendsQuery =  "SELECT userid, friendid FROM friends WHERE (accepted = 'True' AND userid = '$currentUserID') OR (accepted = 'True' AND friendid = '$currentUserID') ";
 $currentUserFriends = sqlsrv_query($conn, $getCurrentUserFriendsQuery, array(), array( "Scrollable" => 'static' ));
@@ -580,7 +586,7 @@ else {
 
                 }
                 elseif (in_array($selectedUserID, $currentUserFriendsArray)){
-                    echo nl2br("You are friends\n\n".$selectedUser."'s friends(".($selectedUserFriendsCount - 1)."): \n");
+                    echo "You are friends<br><a href='?selectedUser=" . $selectedUser . "&unfriend'>Unfriend</a><br><br>".$selectedUser."'s friends(".($selectedUserFriendsCount - 1)."): <br>";
                 }
                 elseif (in_array($selectedUserID, $currentUserReceivedPendingInvitesArray)){
                     echo nl2br("<a href='profile.php?acceptFriend&selectedUser=".$selectedUser."'>Accept friend request</a>\n\n");
