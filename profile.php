@@ -548,20 +548,22 @@ else {
             }
 
             //Page navigation links
-            if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number == 0) { //First of multiple pages
-                echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>&nbsp;";
-            }
-            else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number > 0 && ((($page_number + 1) * 10) < $posts_count)) { //Multiple pages, not first or last
-                echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
-            }
-            else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number > 0) { //Last of multiple pages, with no posts left over
-                echo "Showing posts " . (($page_number * 10) + 1) . "-" . $posts_count . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
-            }
-            else if ($posts_count <= 10){ //Only page
-                echo "Showing posts 1-" . $posts_count . " of " . $posts_count;
-            }
-            else if (!isset($posts_array_row[0])){ //Last page, with <10 posts left
-                echo "Showing posts " . (($page_number * 10) + 1) . "-" . $posts_count . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
+            if ($selectedUserID == $currentUserID || in_array($selectedUserID, $currentUserFriendsArray)){ //If users are friends (otherwise there are no posts visible)
+                if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number == 0) { //First of multiple pages
+                    echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>&nbsp;";
+                }
+                else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number > 0 && ((($page_number + 1) * 10) < $posts_count)) { //Multiple pages, not first or last
+                    echo "Showing posts " . (($page_number * 10) + 1) . "-" . (($page_number + 1) * 10) . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number + 1) . ">Next page</a>&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
+                }
+                else if ($posts_count > 10 && isset($posts_array_row[0]) && $page_number > 0) { //Last of multiple pages, with no posts left over
+                    echo "Showing posts " . (($page_number * 10) + 1) . "-" . $posts_count . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
+                }
+                else if ($posts_count <= 10){ //Only page
+                    echo "Showing posts 1-" . $posts_count . " of " . $posts_count;
+                }
+                else if (!isset($posts_array_row[0])){ //Last page, with <10 posts left
+                    echo "Showing posts " . (($page_number * 10) + 1) . "-" . $posts_count . " of " . $posts_count . "&nbsp;<a href=?selectedUser=" . $selectedUser . "&page=" . ($page_number - 1) . ">Previous page</a>";
+                }
             }
             ?>
         </span>
